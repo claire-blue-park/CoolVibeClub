@@ -9,7 +9,12 @@ import SwiftUI
 
 struct WorldView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            NavBarView(title: "Cool Vibe Club", rightItems: nil)
+                .frame(maxWidth: .infinity)
+
+            Spacer()
+        }
     }
 }
 

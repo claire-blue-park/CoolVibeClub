@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct MainTabView: View {
-  
   @State private var selected: Tab = .tab1
-  
+
+  // init() {
+  //   FontHelper().checkFont()
+  // }
+
   var body: some View {
+
     ZStack {
       TabView(selection: $selected) {
         Group {
@@ -23,7 +27,7 @@ struct MainTabView: View {
               }
           }
           .tag(Tab.tab1)
-          
+
           NavigationStack {
             PostView()
               .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -32,16 +36,16 @@ struct MainTabView: View {
               }
           }
           .tag(Tab.tab2)
-          
+
           NavigationStack {
-            ChatView()
+            ChatListView()
               .safeAreaInset(edge: .bottom, spacing: 0) {
                 Color.clear
                   .frame(height: 100)
               }
           }
           .tag(Tab.tab3)
-          
+
           NavigationStack {
             ProfileView()
               .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -50,11 +54,11 @@ struct MainTabView: View {
               }
           }
           .tag(Tab.tab4)
-        
+
         }
         .toolbar(.hidden, for: .tabBar)
       }
-      
+
       // UI
       VStack {
         Spacer()

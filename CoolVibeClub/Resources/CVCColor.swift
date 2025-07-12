@@ -17,5 +17,6 @@ enum CVCColor {
     static let grayScale90 = Color(red: 67.0 / 255.0, green: 67.0 / 255.0, blue: 71.0 / 255.0)
     static let grayScale100 = Color(white: 11.0 / 255.0)
 
-    static let primary = Color(red: 214.0 / 255.0, green: 229.0 / 255.0, blue: 234.0 / 255.0)
+    static let primary = Color(red: 32.0 / 255.0, green: 108.0 / 255.0, blue: 235.0 / 255.0)
+    static let point = Color(red: 230.0 / 255.0, green: 255.0 / 255.0, blue: 90.0 / 255.0)
 }

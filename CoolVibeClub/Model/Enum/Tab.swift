@@ -28,7 +28,7 @@ enum Tab {
       }
     return Text(title)
       .font(.system(size: 11, weight: .bold))
-    //      .foregroundStyle(Color.sesacActivityDeepSeafoam)
+         .foregroundStyle(CVCColor.primary)
   }
 
   var iconView: some View {

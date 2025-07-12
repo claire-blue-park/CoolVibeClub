@@ -6,13 +6,33 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */; };
+		83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE02E1FD86500DCF63F /* KakaoSDKCommon */; };
+		83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE22E1FD86500DCF63F /* KakaoSDKUser */; };
+		83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 83679C5F2E20901D00DCF63F /* ComposableArchitecture */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoolVibeClub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		83679BBB2E1FCD5E00DCF63F /* Exceptions for "CoolVibeClub" folder in "CoolVibeClub" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 83679B692E1E61FE00DCF63F /* CoolVibeClub */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		83679B6C2E1E61FE00DCF63F /* CoolVibeClub */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				83679BBB2E1FCD5E00DCF63F /* Exceptions for "CoolVibeClub" folder in "CoolVibeClub" target */,
+			);
 			path = CoolVibeClub;
 			sourceTree = "<group>";
 		};
@@ -23,6 +43,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */,
+				83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */,
+				83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */,
+				83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +89,10 @@
 			);
 			name = CoolVibeClub;
 			packageProductDependencies = (
+				83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */,
+				83679BE02E1FD86500DCF63F /* KakaoSDKCommon */,
+				83679BE22E1FD86500DCF63F /* KakaoSDKUser */,
+				83679C5F2E20901D00DCF63F /* ComposableArchitecture */,
 			);
 			productName = CoolVibeClub;
 			productReference = 83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */;
@@ -94,6 +122,10 @@
 			);
 			mainGroup = 83679B612E1E61FE00DCF63F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83679B6B2E1E61FE00DCF63F /* Products */;
 			projectDirPath = "";
@@ -249,16 +281,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CoolVibeClub/CoolVibeClub.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = R56222NR37;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CoolVibeClub/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -278,16 +312,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CoolVibeClub/CoolVibeClub.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = R56222NR37;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CoolVibeClub/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -324,6 +360,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.24.5;
+			};
+		};
+		83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.20.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKAuth;
+		};
+		83679BE02E1FD86500DCF63F /* KakaoSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKCommon;
+		};
+		83679BE22E1FD86500DCF63F /* KakaoSDKUser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKUser;
+		};
+		83679C5F2E20901D00DCF63F /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83679B622E1E61FE00DCF63F /* Project object */;
 }
