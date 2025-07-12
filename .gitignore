@@ -62,6 +62,8 @@ APIKeys.swift
 # Request
 APIRequests.swift
 NetworkManager.swift
-Endpoint.swift
+Network/*.swift
+Endpoint/
+/CoolVibeClub/Network/
 
 
