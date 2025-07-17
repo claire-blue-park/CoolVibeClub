@@ -11,12 +11,12 @@ struct ChatView: View {
     let room: ChatRoom
     @State private var messages: [Message] = Message.sampleData
     @State private var input: String = ""
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // 상단 바
             HStack {
-                Text(room.name)
+                Text(room.participants[0].nick)
                     .font(.system(size: 20, weight: .bold))
                 Spacer()
             }
@@ -68,10 +68,6 @@ struct Message: Identifiable {
         Message(text: "안녕하세요!", isMe: false),
         Message(text: "안녕하세요! 반가워요.", isMe: true),
         Message(text: "오늘 일정 괜찮으세요?", isMe: false),
-        Message(text: "네! 좋아요.", isMe: true)
+        Message(text: "네! 좋아요.", isMe: true),
     ]
-}
-
-#Preview {
-    ChatView(room: ChatRoom.sampleData[0])
 }

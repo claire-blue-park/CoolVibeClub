@@ -24,9 +24,11 @@ enum CVCImage {
     case heartFill
     case heart
     case menu
-  
-  // MARK: - Logo
-  case kakao
+    case mapPin
+
+    // MARK: - Logo
+    case kakao
+    case imagePlaceholder  // 이미지 로딩 실패 시 기본 이미지
 
     var value: Image {
         let name =
@@ -53,10 +55,18 @@ enum CVCImage {
                 "ic_heart"
             case .menu:
                 "ic_menu"
+            case .mapPin:
+                "ic_map_pin"
             case .kakao:
-              "ic_kakao"
+                "ic_kakao"
+            case .imagePlaceholder:
+                "ic_image_placeholder"  // 실제 에셋에 있으면 사용
             }
         return Image(name)
+    }
+
+    static func systemPlaceholder() -> Image {
+        Image(systemName: "photo")
     }
 
     var template: some View {
