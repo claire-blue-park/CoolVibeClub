@@ -10,7 +10,7 @@
 		83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */; };
 		83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE02E1FD86500DCF63F /* KakaoSDKCommon */; };
 		83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE22E1FD86500DCF63F /* KakaoSDKUser */; };
-		83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 83679C5F2E20901D00DCF63F /* ComposableArchitecture */; };
+		83871BAD2E2A0A6D0098BE94 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 83871BAC2E2A0A6D0098BE94 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,8 +44,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */,
+				83871BAD2E2A0A6D0098BE94 /* Alamofire in Frameworks */,
 				83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */,
-				83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */,
 				83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,7 +92,7 @@
 				83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */,
 				83679BE02E1FD86500DCF63F /* KakaoSDKCommon */,
 				83679BE22E1FD86500DCF63F /* KakaoSDKUser */,
-				83679C5F2E20901D00DCF63F /* ComposableArchitecture */,
+				83871BAC2E2A0A6D0098BE94 /* Alamofire */,
 			);
 			productName = CoolVibeClub;
 			productReference = 83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */;
@@ -124,7 +124,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
-				83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				83871BAB2E2A0A6D0098BE94 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83679B6B2E1E61FE00DCF63F /* Products */;
@@ -374,12 +374,12 @@
 				minimumVersion = 2.24.5;
 			};
 		};
-		83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+		83871BAB2E2A0A6D0098BE94 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.20.2;
+				minimumVersion = 5.10.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -400,10 +400,10 @@
 			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKUser;
 		};
-		83679C5F2E20901D00DCF63F /* ComposableArchitecture */ = {
+		83871BAC2E2A0A6D0098BE94 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
+			package = 83871BAB2E2A0A6D0098BE94 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
