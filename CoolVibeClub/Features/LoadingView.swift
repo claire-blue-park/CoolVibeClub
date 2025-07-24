@@ -2,7 +2,8 @@
 //  LoadingView.swift
 //  CoolVibeClub
 //
-//  Created by Claire on 7/11/25.
+//  Created by Claire on 2025.
+//  Copyright © 2025 ClaireBluePark. All rights reserved.
 //
 
 import SwiftUI
