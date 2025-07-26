@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "originHash" : "1385c338ab5d555aa2498942945efa852e59a6a4a57404e6a4c1f329c0f49e53",
+=======
+  "originHash" : "e0acb412a9938417b19423d3eba780edbf94dc152872ec6cd22c0131fd5b620b",
+>>>>>>> Stashed changes
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
