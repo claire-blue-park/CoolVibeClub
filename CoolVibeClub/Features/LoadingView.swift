@@ -2,7 +2,8 @@
 //  LoadingView.swift
 //  CoolVibeClub
 //
-//  Created by Claire on 7/11/25.
+//  Created by Claire on 2025.
+//  Copyright © 2025 ClaireBluePark. All rights reserved.
 //
 
 import SwiftUI
@@ -13,10 +14,8 @@ struct LoadingView: View {
             Spacer()
             
             // 로고 또는 앱 이름
-            Text("Wavy")
-                .font(.system(size: 32, weight: .heavy))
-                .foregroundColor(CVCColor.primary)
-                .padding(.bottom, 20)
+          Text("Cool Vibe Club")
+              .navTitleStyle()
             
             // 로딩 인디케이터
             ProgressView()
@@ -26,7 +25,7 @@ struct LoadingView: View {
             
             // 로딩 메시지
             Text("로그인 정보를 확인하는 중입니다...")
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 12, weight: .medium))
                 .foregroundColor(.gray)
                 .padding(.bottom, 40)
             

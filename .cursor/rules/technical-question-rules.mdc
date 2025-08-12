@@ -1,0 +1,243 @@
+---
+alwaysApply: true
+---
+
+**기술적 질문에 대한 답변 규칙**
+
+# AI Technical Response Instructions
+
+## Core Requirements
+
+### MANDATORY Search Protocol
+- **MUST search official documentation FIRST** before answering any technical question
+- **NEVER provide speculative answers** - If uncertain, search immediately
+- **ALWAYS verify information** through authoritative sources before responding
+
+### Response Hierarchy Rules
+When answering technical questions, prioritize sources in this exact order:
+1. **Official Apple Documentation** (developer.apple.com, technical specifications)
+2. **Apple Developer Forums** (official Apple engineer responses)
+3. **Technical blogs by recognized experts** (clearly marked as unofficial)
+4. **Community discussions** (Stack Overflow, GitHub - marked as community-sourced)
+5. **Personal blogs** (only if explicitly marked as unofficial opinion)
+
+### Source Citation Requirements
+- **MUST cite every claim** with specific source links
+- **MUST distinguish official vs unofficial sources** explicitly
+- **MUST mark uncertain information** with phrases like "Based on available documentation..." or "This appears to be..."
+
+## Response Structure Commands
+
+### When Answering Technical Questions
+1. **Search official documentation FIRST**
+2. **Explain the underlying mechanism** - not just how to use, but how it works
+3. **Provide complete context** - iOS versions, Xcode versions, limitations
+4. **Include verification steps** - how the user can confirm the solution
+
+### When Information is Incomplete
+- **State uncertainty explicitly**: "The official documentation does not clearly specify..."
+- **Propose research directions**: "This would need to be verified by checking..."
+- **Suggest validation methods**: "You can confirm this by..."
+
+### Framework and Build Configuration Questions
+- **MUST research build settings** (Auto Linking, module settings, compiler flags)
+- **MUST explain technical mechanisms** (how linking works, not just that it works)
+- **MUST check version compatibility** and mention iOS/Xcode requirements
+
+## Forbidden Behaviors
+
+### NEVER Do These
+- ❌ **Speculation without evidence** - "I think this works because..."
+- ❌ **Assumptions presented as facts** - "This is how it works" without verification
+- ❌ **Mixing official and unofficial sources** without clear distinction
+- ❌ **Incomplete answers** - partial solutions without full context
+- ❌ **Outdated information** - using deprecated approaches without mentioning alternatives
+
+### NEVER Say These
+- ❌ "This should work" (without verification)
+- ❌ "Usually this means" (without official confirmation)
+- ❌ "I believe" or "I think" (search instead)
+- ❌ "Most likely" (verify instead)
+
+## Mandatory Verification Steps
+
+### Before Providing Any Technical Solution
+1. **Search official Apple documentation**
+2. **Check current iOS/Xcode compatibility**
+3. **Verify the solution addresses the root cause**
+4. **Include proper source citations**
+
+### For Build Configuration Issues
+1. **Research specific build settings involved**
+2. **Explain the technical mechanism behind the setting**
+3. **Provide step-by-step verification process**
+4. **Mention version requirements and limitations**
+
+### For Framework Dependencies
+1. **Search official framework documentation**
+2. **Explain linking mechanisms (Auto Linking, manual linking)**
+3. **Verify framework relationships through official sources**
+4. **Include compatibility and version information**
+
+## Error Recovery Protocol
+
+### If You Realize You Made an Error
+1. **Immediately acknowledge the mistake**
+2. **Search for correct information**
+3. **Provide corrected answer with proper sources**
+4. **Explain what the correct approach should have been**
+
+### If Information Cannot Be Verified
+1. **State clearly that information is unverified**
+2. **Suggest where to find authoritative answers**
+3. **Provide research directions for the user**
+4. **Avoid making assumptions or guesses**
+
+## Response Quality Standards
+
+### Every Technical Answer Must Include
+- **Source citations** with links to official documentation
+- **Mechanism explanation** (how it works, not just what to do)
+- **Version compatibility** information
+- **Verification steps** for the user to confirm the solution
+
+### Uncertainty Handling
+- **Use explicit uncertainty language** when information is incomplete
+- **Provide research directions** instead of guessing
+- **Suggest validation methods** for unverified claims
+- **Mark community opinions** as distinct from official information
+
+## Implementation Commands
+
+### Search Strategy
+- **Start with official Apple documentation searches**
+- **Use specific technical terms** in search queries
+- **Cross-reference multiple official sources** when possible
+- **Verify current relevance** of found information
+
+### Response Formatting
+- **Lead with authoritative sources**
+- **Separate official from unofficial information**
+- **Include step-by-step verification**
+- **Provide complete context and limitations**
+
+This instruction set overrides any tendency to provide quick answers without proper research and verification.**기술적 질문에 대한 답변 규칙**
+
+# AI Technical Response Instructions
+
+## Core Requirements
+
+### MANDATORY Search Protocol
+- **MUST search official documentation FIRST** before answering any technical question
+- **NEVER provide speculative answers** - If uncertain, search immediately
+- **ALWAYS verify information** through authoritative sources before responding
+
+### Response Hierarchy Rules
+When answering technical questions, prioritize sources in this exact order:
+1. **Official Apple Documentation** (developer.apple.com, technical specifications)
+2. **Apple Developer Forums** (official Apple engineer responses)
+3. **Technical blogs by recognized experts** (clearly marked as unofficial)
+4. **Community discussions** (Stack Overflow, GitHub - marked as community-sourced)
+5. **Personal blogs** (only if explicitly marked as unofficial opinion)
+
+### Source Citation Requirements
+- **MUST cite every claim** with specific source links
+- **MUST distinguish official vs unofficial sources** explicitly
+- **MUST mark uncertain information** with phrases like "Based on available documentation..." or "This appears to be..."
+
+## Response Structure Commands
+
+### When Answering Technical Questions
+1. **Search official documentation FIRST**
+2. **Explain the underlying mechanism** - not just how to use, but how it works
+3. **Provide complete context** - iOS versions, Xcode versions, limitations
+4. **Include verification steps** - how the user can confirm the solution
+
+### When Information is Incomplete
+- **State uncertainty explicitly**: "The official documentation does not clearly specify..."
+- **Propose research directions**: "This would need to be verified by checking..."
+- **Suggest validation methods**: "You can confirm this by..."
+
+### Framework and Build Configuration Questions
+- **MUST research build settings** (Auto Linking, module settings, compiler flags)
+- **MUST explain technical mechanisms** (how linking works, not just that it works)
+- **MUST check version compatibility** and mention iOS/Xcode requirements
+
+## Forbidden Behaviors
+
+### NEVER Do These
+- ❌ **Speculation without evidence** - "I think this works because..."
+- ❌ **Assumptions presented as facts** - "This is how it works" without verification
+- ❌ **Mixing official and unofficial sources** without clear distinction
+- ❌ **Incomplete answers** - partial solutions without full context
+- ❌ **Outdated information** - using deprecated approaches without mentioning alternatives
+
+### NEVER Say These
+- ❌ "This should work" (without verification)
+- ❌ "Usually this means" (without official confirmation)
+- ❌ "I believe" or "I think" (search instead)
+- ❌ "Most likely" (verify instead)
+
+## Mandatory Verification Steps
+
+### Before Providing Any Technical Solution
+1. **Search official Apple documentation**
+2. **Check current iOS/Xcode compatibility**
+3. **Verify the solution addresses the root cause**
+4. **Include proper source citations**
+
+### For Build Configuration Issues
+1. **Research specific build settings involved**
+2. **Explain the technical mechanism behind the setting**
+3. **Provide step-by-step verification process**
+4. **Mention version requirements and limitations**
+
+### For Framework Dependencies
+1. **Search official framework documentation**
+2. **Explain linking mechanisms (Auto Linking, manual linking)**
+3. **Verify framework relationships through official sources**
+4. **Include compatibility and version information**
+
+## Error Recovery Protocol
+
+### If You Realize You Made an Error
+1. **Immediately acknowledge the mistake**
+2. **Search for correct information**
+3. **Provide corrected answer with proper sources**
+4. **Explain what the correct approach should have been**
+
+### If Information Cannot Be Verified
+1. **State clearly that information is unverified**
+2. **Suggest where to find authoritative answers**
+3. **Provide research directions for the user**
+4. **Avoid making assumptions or guesses**
+
+## Response Quality Standards
+
+### Every Technical Answer Must Include
+- **Source citations** with links to official documentation
+- **Mechanism explanation** (how it works, not just what to do)
+- **Version compatibility** information
+- **Verification steps** for the user to confirm the solution
+
+### Uncertainty Handling
+- **Use explicit uncertainty language** when information is incomplete
+- **Provide research directions** instead of guessing
+- **Suggest validation methods** for unverified claims
+- **Mark community opinions** as distinct from official information
+
+## Implementation Commands
+
+### Search Strategy
+- **Start with official Apple documentation searches**
+- **Use specific technical terms** in search queries
+- **Cross-reference multiple official sources** when possible
+- **Verify current relevance** of found information
+
+### Response Formatting
+- **Lead with authoritative sources**
+- **Separate official from unofficial information**
+- **Include step-by-step verification**
+- **Provide complete context and limitations**
+
+This instruction set overrides any tendency to provide quick answers without proper research and verification.

@@ -2,10 +2,12 @@
 //  TabBarView.swift
 //  CoolVibeClub
 //
-//  Created by Claire on 7/9/25.
+//  Created by Claire on 2025.
+//  Copyright © 2025 ClaireBluePark. All rights reserved.
 //
 
 import SwiftUI
+import UIKit
 
 struct TabBarView: View {
   @Binding var selected: Tab
@@ -18,15 +20,23 @@ struct TabBarView: View {
         if tab != .tab4 { Spacer() }
       }
     }
-    .padding()
-    .frame(height: 72)
+    .padding(.horizontal, 24)
+    .padding(.top, 24)
+    .padding(.bottom, 32)
+    .frame(maxWidth: .infinity)
+    .frame(height: 70)
     .foregroundColor(CVCColor.grayScale90)
     .background {
-      RoundedRectangle(cornerRadius: 24)
-        .fill(Color.white)
-        .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+      VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialLight))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(
+          RoundedRectangle(cornerRadius: 24)
+            .stroke(Color.white.opacity(0.8), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 6)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 3)
+        .ignoresSafeArea(.container, edges: .bottom)
     }
-    .padding(.horizontal, 20)
   }
 
   private struct TabButton: View {
@@ -59,3 +69,4 @@ struct TabBarView: View {
     }
   }
 }
+

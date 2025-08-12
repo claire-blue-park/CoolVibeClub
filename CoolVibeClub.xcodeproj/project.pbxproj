@@ -7,11 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */; };
-		83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE02E1FD86500DCF63F /* KakaoSDKCommon */; };
-		83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 83679BE22E1FD86500DCF63F /* KakaoSDKUser */; };
-		83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 83679C5F2E20901D00DCF63F /* ComposableArchitecture */; };
+		8348C35C2E38536500BBD74D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8348C35B2E38536500BBD74D /* Lottie */; };
+		8348C4732E3B43A200BBD74D /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8348C4722E3B43A200BBD74D /* RealmSwift */; };
+		8348C58C2E3B727A00BBD74D /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8348C4722E3B43A200BBD74D /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8348C5A62E3E446E00BBD74D /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 8348C5A52E3E446E00BBD74D /* SocketIO */; };
+		83871F192E2D36110098BE94 /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 83871F182E2D36110098BE94 /* KakaoSDKAuth */; };
+		83871F1B2E2D36110098BE94 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 83871F1A2E2D36110098BE94 /* KakaoSDKCommon */; };
+		83871F1D2E2D36110098BE94 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 83871F1C2E2D36110098BE94 /* KakaoSDKUser */; };
+		83871F202E2D361A0098BE94 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 83871F1F2E2D361A0098BE94 /* Kingfisher */; };
+		83FF330B2E4381730027B267 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 83FF330A2E4381730027B267 /* iamport-ios */; };
+		83FF332D2E4465450027B267 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 83FF332C2E4465450027B267 /* FirebaseCore */; };
+		83FF332F2E4465450027B267 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 83FF332E2E4465450027B267 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8348C58D2E3B727A00BBD74D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8348C58C2E3B727A00BBD74D /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoolVibeClub.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,10 +64,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83679BE12E1FD86500DCF63F /* KakaoSDKCommon in Frameworks */,
-				83679BDF2E1FD86500DCF63F /* KakaoSDKAuth in Frameworks */,
-				83679C602E20901D00DCF63F /* ComposableArchitecture in Frameworks */,
-				83679BE32E1FD86500DCF63F /* KakaoSDKUser in Frameworks */,
+				8348C4732E3B43A200BBD74D /* RealmSwift in Frameworks */,
+				8348C35C2E38536500BBD74D /* Lottie in Frameworks */,
+				83FF332F2E4465450027B267 /* FirebaseMessaging in Frameworks */,
+				8348C5A62E3E446E00BBD74D /* SocketIO in Frameworks */,
+				83871F202E2D361A0098BE94 /* Kingfisher in Frameworks */,
+				83871F1B2E2D36110098BE94 /* KakaoSDKCommon in Frameworks */,
+				83871F192E2D36110098BE94 /* KakaoSDKAuth in Frameworks */,
+				83871F1D2E2D36110098BE94 /* KakaoSDKUser in Frameworks */,
+				83FF332D2E4465450027B267 /* FirebaseCore in Frameworks */,
+				83FF330B2E4381730027B267 /* iamport-ios in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +106,7 @@
 				83679B662E1E61FE00DCF63F /* Sources */,
 				83679B672E1E61FE00DCF63F /* Frameworks */,
 				83679B682E1E61FE00DCF63F /* Resources */,
+				8348C58D2E3B727A00BBD74D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -89,10 +117,16 @@
 			);
 			name = CoolVibeClub;
 			packageProductDependencies = (
-				83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */,
-				83679BE02E1FD86500DCF63F /* KakaoSDKCommon */,
-				83679BE22E1FD86500DCF63F /* KakaoSDKUser */,
-				83679C5F2E20901D00DCF63F /* ComposableArchitecture */,
+				83871F182E2D36110098BE94 /* KakaoSDKAuth */,
+				83871F1A2E2D36110098BE94 /* KakaoSDKCommon */,
+				83871F1C2E2D36110098BE94 /* KakaoSDKUser */,
+				83871F1F2E2D361A0098BE94 /* Kingfisher */,
+				8348C35B2E38536500BBD74D /* Lottie */,
+				8348C4722E3B43A200BBD74D /* RealmSwift */,
+				8348C5A52E3E446E00BBD74D /* SocketIO */,
+				83FF330A2E4381730027B267 /* iamport-ios */,
+				83FF332C2E4465450027B267 /* FirebaseCore */,
+				83FF332E2E4465450027B267 /* FirebaseMessaging */,
 			);
 			productName = CoolVibeClub;
 			productReference = 83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */;
@@ -123,8 +157,13 @@
 			mainGroup = 83679B612E1E61FE00DCF63F;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
-				83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				83871F172E2D36110098BE94 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				83871F1E2E2D361A0098BE94 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				8348C35A2E38536500BBD74D /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				8348C4712E3B43A200BBD74D /* XCRemoteSwiftPackageReference "realm-swift" */,
+				8348C5A42E3E446E00BBD74D /* XCRemoteSwiftPackageReference "socket.io-client-swift" */,
+				83FF33092E4381730027B267 /* XCRemoteSwiftPackageReference "iamport-ios" */,
+				83FF332B2E4465450027B267 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83679B6B2E1E61FE00DCF63F /* Products */;
@@ -209,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -266,7 +305,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -284,16 +323,21 @@
 				CODE_SIGN_ENTITLEMENTS = CoolVibeClub/CoolVibeClub.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/App/Preview Content\"";
 				DEVELOPMENT_TEAM = R56222NR37;
 				ENABLE_PREVIEWS = YES;
+				GCC_SHORT_ENUMS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CoolVibeClub/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "나의 위치 정보에 접근하는 것을 허용하시겠습니까?";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "주변 액티비티 정보를 제공하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				KAKAO_NATIVE_APP_KEY = 9805de5df633954741b15a219bc73b6e;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -315,16 +359,21 @@
 				CODE_SIGN_ENTITLEMENTS = CoolVibeClub/CoolVibeClub.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"CoolVibeClub/App/Preview Content\"";
 				DEVELOPMENT_TEAM = R56222NR37;
 				ENABLE_PREVIEWS = YES;
+				GCC_SHORT_ENUMS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CoolVibeClub/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "나의 위치 정보에 접근하는 것을 허용하시겠습니까?";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "주변 액티비티 정보를 제공하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				KAKAO_NATIVE_APP_KEY = 9805de5df633954741b15a219bc73b6e;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -362,7 +411,31 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+		8348C35A2E38536500BBD74D /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
+		8348C4712E3B43A200BBD74D /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		8348C5A42E3E446E00BBD74D /* XCRemoteSwiftPackageReference "socket.io-client-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		83871F172E2D36110098BE94 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
 			requirement = {
@@ -370,36 +443,82 @@
 				minimumVersion = 2.24.5;
 			};
 		};
-		83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+		83871F1E2E2D361A0098BE94 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.20.2;
+				minimumVersion = 8.5.0;
+			};
+		};
+		83FF33092E4381730027B267 /* XCRemoteSwiftPackageReference "iamport-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iamport/iamport-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.7;
+			};
+		};
+		83FF332B2E4465450027B267 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		83679BDE2E1FD86500DCF63F /* KakaoSDKAuth */ = {
+		8348C35B2E38536500BBD74D /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			package = 8348C35A2E38536500BBD74D /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+		8348C4722E3B43A200BBD74D /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8348C4712E3B43A200BBD74D /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		8348C5A52E3E446E00BBD74D /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8348C5A42E3E446E00BBD74D /* XCRemoteSwiftPackageReference "socket.io-client-swift" */;
+			productName = SocketIO;
+		};
+		83871F182E2D36110098BE94 /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83871F172E2D36110098BE94 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKAuth;
 		};
-		83679BE02E1FD86500DCF63F /* KakaoSDKCommon */ = {
+		83871F1A2E2D36110098BE94 /* KakaoSDKCommon */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			package = 83871F172E2D36110098BE94 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKCommon;
 		};
-		83679BE22E1FD86500DCF63F /* KakaoSDKUser */ = {
+		83871F1C2E2D36110098BE94 /* KakaoSDKUser */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 83679BDD2E1FD86500DCF63F /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			package = 83871F172E2D36110098BE94 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKUser;
 		};
-		83679C5F2E20901D00DCF63F /* ComposableArchitecture */ = {
+		83871F1F2E2D361A0098BE94 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 83679C5E2E20901D00DCF63F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
+			package = 83871F1E2E2D361A0098BE94 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		83FF330A2E4381730027B267 /* iamport-ios */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83FF33092E4381730027B267 /* XCRemoteSwiftPackageReference "iamport-ios" */;
+			productName = "iamport-ios";
+		};
+		83FF332C2E4465450027B267 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83FF332B2E4465450027B267 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		83FF332E2E4465450027B267 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83FF332B2E4465450027B267 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

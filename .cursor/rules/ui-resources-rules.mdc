@@ -1,0 +1,149 @@
+---
+alwaysApply: true
+---
+
+# UI 리소스 규칙
+
+### 1. CVCColor 사용 규칙
+```swift
+// ❌ 잘못된 사용 - 직접 Color 생성
+Color(.systemBlue)
+Color.white
+Color(red: 0.2, green: 0.4, blue: 0.8)
+
+// ✅ 올바른 사용 - CVCColor 사용
+CVCColor.primary
+CVCColor.grayScale0
+CVCColor.point
+```
+
+### 2. CVCImage 사용 규칙
+```swift
+// ❌ 잘못된 사용 - 직접 Image 생성
+Image("some_image")
+Image(systemName: "heart")
+
+// ✅ 올바른 사용 - CVCImage 사용
+CVCImage.heart.value
+CVCImage.profile.template
+CVCImage.search.value
+```
+
+### 3. 새로운 이미지 추가 시 규칙
+```swift
+// CVCImage.swift에 새로운 케이스 추가
+enum CVCImage {
+    // 기존 케이스들...
+    case newIcon  // 새로운 아이콘 추가
+    
+    var value: Image {
+        let name = 
+            switch self {
+            // 기존 케이스들...
+            case .newIcon:
+                "ic_new_icon"  // 에셋 파일명과 일치
+            }
+        return Image(name)
+    }
+}
+```
+
+### 4. 새로운 색상 추가 시 규칙
+```swift
+// CVCColor.swift에 새로운 색상 추가
+enum CVCColor {
+    // 기존 색상들...
+    static let success = Color(red: 76.0 / 255.0, green: 175.0 / 255.0, blue: 80.0 / 255.0)
+    static let warning = Color(red: 255.0 / 255.0, green: 152.0 / 255.0, blue: 0.0 / 255.0)
+    static let error = Color(red: 244.0 / 255.0, green: 67.0 / 255.0, blue: 54.0 / 255.0)
+}
+```
+
+### 5. View에서 UI 리소스 사용 예시
+```swift
+struct ExampleView: View {
+    var body: some View {
+        VStack {
+            // 이미지 사용
+            CVCImage.profile.template
+                .foregroundColor(CVCColor.primary)
+                .frame(width: 24, height: 24)
+            
+            // 텍스트 색상 적용
+            Text("사용자 프로필")
+                .foregroundColor(CVCColor.grayScale90)
+                .font(.headline)
+            
+            // 배경 색상 적용
+            Rectangle()
+                .fill(CVCColor.grayScale15)
+                .frame(height: 1)
+        }
+        .background(CVCColor.grayScale0)
+    }
+}
+```
+
+### 6. 버튼 스타일 예시
+```swift
+struct PrimaryButton: View {
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .foregroundColor(CVCColor.grayScale0)
+                .font(.headline)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(CVCColor.primary)
+                .cornerRadius(8)
+        }
+    }
+}
+```
+
+### 7. 탭 바 아이콘 사용 예시
+```swift
+struct MainTabView: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            // 첫 번째 탭
+            ExploreView()
+                .tabItem {
+                    CVCImage.globe.value
+                    Text("탐색")
+                }
+                .tag(0)
+            
+            // 두 번째 탭
+            PostView()
+                .tabItem {
+                    CVCImage.post.value
+                    Text("게시물")
+                }
+                .tag(1)
+            
+            // 세 번째 탭
+            ChatView()
+                .tabItem {
+                    CVCImage.chat.value
+                    Text("채팅")
+                }
+                .tag(2)
+            
+            // 네 번째 탭
+            ProfileView()
+                .tabItem {
+                    CVCImage.profile.value
+                    Text("프로필")
+                }
+                .tag(3)
+        }
+        .accentColor(CVCColor.primary)
+    }
+}
+```

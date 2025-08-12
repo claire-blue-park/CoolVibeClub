@@ -1,0 +1,751 @@
+---
+alwaysApply: true
+---
+
+# MVVM-C 패턴 SwiftUI Cursor 규칙
+
+## 파일 구조 및 네이밍
+
+### 디렉토리 구조
+```
+App/
+├── Models/
+├── Views/
+├── ViewModels/
+├── Coordinators/
+├── Services/
+├── Utils/
+└── Resources/
+```
+
+### 네이밍 규칙
+- **Model**: `User.swift`, `Product.swift`
+- **View**: `UserView.swift`, `ProductListView.swift`
+- **ViewModel**: `UserViewModel.swift`, `ProductListViewModel.swift`
+- **Coordinator**: `UserCoordinator.swift`, `AppCoordinator.swift`
+
+## 코드 생성 규칙
+
+### 1. Model 생성
+```swift
+// Model은 항상 Codable, Identifiable 준수
+struct ModelName: Codable, Identifiable {
+    let id: UUID
+    // 속성들
+    
+    init() {
+        self.id = UUID()
+        // 초기화 로직
+    }
+}
+```
+
+### 2. ViewModel 생성
+```swift
+import Foundation
+import SwiftUI
+
+// ViewModel은 ObservableObject 준수
+@MainActor
+final class ViewNameViewModel: ObservableObject {
+    // MARK: - Properties
+    @Published var items: [ModelType] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
+    // MARK: - Dependencies
+    private let coordinator: CoordinatorProtocol
+    private let service: ServiceProtocol
+    
+    // MARK: - Initialization
+    init(coordinator: CoordinatorProtocol, service: ServiceProtocol) {
+        self.coordinator = coordinator
+        self.service = service
+    }
+    
+    // MARK: - Methods
+    func loadData() {
+        // 데이터 로딩 로직
+    }
+    
+    func navigateToDetail(item: ModelType) {
+        coordinator.navigateToDetail(item: item)
+    }
+}
+```
+
+### 3. View 생성
+```swift
+import SwiftUI
+
+struct ViewName: View {
+    // MARK: - Properties
+    @StateObject private var viewModel: ViewNameViewModel
+    
+    // MARK: - Initialization
+    init(viewModel: ViewNameViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    // MARK: - Body
+    var body: some View {
+        NavigationView {
+            // UI 구성
+        }
+        .onAppear {
+            viewModel.loadData()
+        }
+    }
+}
+
+```
+
+### 4. Coordinator 생성
+```swift
+import SwiftUI
+
+// Coordinator 프로토콜 정의
+protocol CoordinatorNameProtocol {
+    func start()
+    func navigateToDetail(item: ModelType)
+    func goBack()
+}
+
+// Coordinator 구현
+@MainActor
+final class CoordinatorName: CoordinatorProtocol, ObservableObject {
+    // MARK: - Properties
+    @Published var navigationPath = NavigationPath()
+    @Published var currentView: AnyView?
+    
+    // MARK: - Dependencies
+    private let parentCoordinator: ParentCoordinator?
+    
+    // MARK: - Initialization
+    init(parentCoordinator: ParentCoordinator? = nil) {
+        self.parentCoordinator = parentCoordinator
+    }
+    
+    // MARK: - Navigation Methods
+    func start() {
+        // 시작 화면 설정
+        let viewModel = ViewNameViewModel(coordinator: self, service: ServiceImpl())
+        currentView = AnyView(ViewName(viewModel: viewModel))
+    }
+    
+    func navigateToDetail(item: ModelType) {
+        // 네비게이션 로직
+        navigationPath.append(item)
+    }
+    
+    func goBack() {
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
+        }
+    }
+}
+```
+
+## 주석 규칙
+
+### 1. 파일 헤더 주석
+```swift
+//
+//  FileName.swift
+//  CoolVibeClub
+//
+//  Created by Claire on 날짜
+//  Copyright © 2025 ClaireBluePark. All rights reserved.
+//
+```
+
+### 2. 클래스/구조체 주석
+```swift
+/// 사용자 정보를 관리하는 뷰모델
+/// - 사용자 데이터 로딩 및 상태 관리
+/// - 네비게이션 처리
+final class UserViewModel: ObservableObject {
+    // 구현
+}
+```
+
+### 3. 함수 주석
+```swift
+/// 사용자 데이터를 서버에서 가져옵니다
+/// - Parameters:
+///   - userId: 사용자 ID
+///   - completion: 완료 콜백
+/// - Returns: 사용자 데이터 또는 에러
+func fetchUser(userId: String, completion: @escaping (Result<User, Error>) -> Void) {
+    // 구현
+}
+```
+
+### 4. 프로퍼티 주석
+```swift
+/// 현재 로딩 상태를 나타냅니다
+@Published var isLoading = false
+
+/// 사용자 목록 데이터
+@Published private(set) var users: [User] = []
+```
+
+## 코딩 컨벤션
+
+### 1. 접근 제어자
+- `public`: 모듈 외부에서 접근 가능
+- `internal`: 기본값, 같은 모듈 내에서만 접근
+- `private`: 같은 파일 내에서만 접근
+- `fileprivate`: 같은 파일 내의 모든 타입에서 접근
+
+### 2. 프로퍼티 순서
+1. `@Published` 프로퍼티
+2. `@State`, `@StateObject` 프로퍼티
+3. 일반 프로퍼티
+4. 의존성 프로퍼티
+
+### 3. 메서드 순서
+1. `init` 메서드
+2. `public` 메서드
+3. `internal` 메서드
+4. `private` 메서드
+
+### 4. MARK 사용
+```swift
+// MARK: - Properties
+// MARK: - Initialization
+// MARK: - Public Methods
+// MARK: - Private Methods
+// MARK: - Protocol Conformance
+```
+
+## 의존성 주입 규칙
+
+### 1. 프로토콜 기반 의존성
+```swift
+protocol UserServiceProtocol {
+    func fetchUsers() async throws -> [User]
+}
+
+final class UserService: UserServiceProtocol {
+    func fetchUsers() async throws -> [User] {
+        // 구현
+    }
+}
+```
+
+### 2. 생성자 주입
+```swift
+final class UserViewModel: ObservableObject {
+    private let userService: UserServiceProtocol
+    private let coordinator: UserCoordinatorProtocol
+    
+    init(userService: UserServiceProtocol, coordinator: UserCoordinatorProtocol) {
+        self.userService = userService
+        self.coordinator = coordinator
+    }
+}
+```
+
+## 에러 처리 규칙
+
+### 1. 커스텀 에러 정의
+```swift
+enum NetworkError: LocalizedError {
+    case invalidURL
+    case noData
+    case decodingError
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "잘못된 URL입니다"
+        case .noData:
+            return "데이터가 없습니다"
+        case .decodingError:
+            return "데이터 파싱 오류입니다"
+        }
+    }
+}
+```
+
+### 2. 에러 상태 관리
+```swift
+@Published var errorMessage: String?
+@Published var showingAlert = false
+
+func handleError(_ error: Error) {
+    DispatchQueue.main.async {
+        self.errorMessage = error.localizedDescription
+        self.showingAlert = true
+    }
+}
+```
+
+## 테스트 코드 규칙
+
+### 1. Mock 객체 생성
+```swift
+final class MockUserService: UserServiceProtocol {
+    var shouldReturnError = false
+    var mockUsers: [User] = []
+    
+    func fetchUsers() async throws -> [User] {
+        if shouldReturnError {
+            throw NetworkError.noData
+        }
+        return mockUsers
+    }
+}
+```
+
+### 2. 테스트 케이스 작성
+```swift
+@testable import AppName
+import XCTest
+
+final class UserViewModelTests: XCTestCase {
+    var viewModel: UserViewModel!
+    var mockService: MockUserService!
+    var mockCoordinator: MockUserCoordinator!
+    
+    override func setUp() {
+        super.setUp()
+        mockService = MockUserService()
+        mockCoordinator = MockUserCoordinator()
+        viewModel = UserViewModel(userService: mockService, coordinator: mockCoordinator)
+    }
+    
+    override func tearDown() {
+        viewModel = nil
+        mockService = nil
+        mockCoordinator = nil
+        super.tearDown()
+    }
+    
+    func test_사용자_데이터_로딩_성공() async {
+        // Given
+        let expectedUsers = [User(id: UUID(), name: "테스트 사용자")]
+        mockService.mockUsers = expectedUsers
+        
+        // When
+        await viewModel.loadUsers()
+        
+        // Then
+        XCTAssertEqual(viewModel.users, expectedUsers)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+}
+```
+
+## 성능 최적화 규칙
+
+### 1. @MainActor 사용
+```swift
+@MainActor
+final class ViewModel: ObservableObject {
+    // UI 업데이트가 메인 스레드에서 실행됨
+}
+```
+
+### 2. 메모리 누수 방지
+```swift
+func setupObserver() {
+    NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleNotification),
+        name: .userDidLogin,
+        object: nil
+    )
+}
+
+deinit {
+    NotificationCenter.default.removeObserver(self)
+}
+```
+
+### 3. 적절한 캐싱
+```swift
+private var imageCache: [String: UIImage] = [:]
+
+func loadImage(url: String) -> UIImage? {
+    if let cachedImage = imageCache[url] {
+        return cachedImage
+    }
+    // 이미지 로딩 로직
+}
+```# MVVM-C 패턴 SwiftUI Cursor 규칙
+
+## 파일 구조 및 네이밍
+
+### 디렉토리 구조
+```
+App/
+├── Models/
+├── Views/
+├── ViewModels/
+├── Coordinators/
+├── Services/
+├── Utils/
+└── Resources/
+```
+
+### 네이밍 규칙
+- **Model**: `User.swift`, `Product.swift`
+- **View**: `UserView.swift`, `ProductListView.swift`
+- **ViewModel**: `UserViewModel.swift`, `ProductListViewModel.swift`
+- **Coordinator**: `UserCoordinator.swift`, `AppCoordinator.swift`
+
+## 코드 생성 규칙
+
+### 1. Model 생성
+```swift
+// Model은 항상 Codable, Identifiable 준수
+struct ModelName: Codable, Identifiable {
+    let id: UUID
+    // 속성들
+    
+    init() {
+        self.id = UUID()
+        // 초기화 로직
+    }
+}
+```
+
+### 2. ViewModel 생성
+```swift
+import Foundation
+import SwiftUI
+
+// ViewModel은 ObservableObject 준수
+@MainActor
+final class ViewNameViewModel: ObservableObject {
+    // MARK: - Properties
+    @Published var items: [ModelType] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
+    // MARK: - Dependencies
+    private let coordinator: CoordinatorProtocol
+    private let service: ServiceProtocol
+    
+    // MARK: - Initialization
+    init(coordinator: CoordinatorProtocol, service: ServiceProtocol) {
+        self.coordinator = coordinator
+        self.service = service
+    }
+    
+    // MARK: - Methods
+    func loadData() {
+        // 데이터 로딩 로직
+    }
+    
+    func navigateToDetail(item: ModelType) {
+        coordinator.navigateToDetail(item: item)
+    }
+}
+```
+
+### 3. View 생성
+```swift
+import SwiftUI
+
+struct ViewName: View {
+    // MARK: - Properties
+    @StateObject private var viewModel: ViewNameViewModel
+    
+    // MARK: - Initialization
+    init(viewModel: ViewNameViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    // MARK: - Body
+    var body: some View {
+        NavigationView {
+            // UI 구성
+        }
+        .onAppear {
+            viewModel.loadData()
+        }
+    }
+}
+
+```
+
+### 4. Coordinator 생성
+```swift
+import SwiftUI
+
+// Coordinator 프로토콜 정의
+protocol CoordinatorNameProtocol {
+    func start()
+    func navigateToDetail(item: ModelType)
+    func goBack()
+}
+
+// Coordinator 구현
+@MainActor
+final class CoordinatorName: CoordinatorProtocol, ObservableObject {
+    // MARK: - Properties
+    @Published var navigationPath = NavigationPath()
+    @Published var currentView: AnyView?
+    
+    // MARK: - Dependencies
+    private let parentCoordinator: ParentCoordinator?
+    
+    // MARK: - Initialization
+    init(parentCoordinator: ParentCoordinator? = nil) {
+        self.parentCoordinator = parentCoordinator
+    }
+    
+    // MARK: - Navigation Methods
+    func start() {
+        // 시작 화면 설정
+        let viewModel = ViewNameViewModel(coordinator: self, service: ServiceImpl())
+        currentView = AnyView(ViewName(viewModel: viewModel))
+    }
+    
+    func navigateToDetail(item: ModelType) {
+        // 네비게이션 로직
+        navigationPath.append(item)
+    }
+    
+    func goBack() {
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
+        }
+    }
+}
+```
+
+## 주석 규칙
+
+### 1. 파일 헤더 주석
+```swift
+//
+//  FileName.swift
+//  CoolVibeClub
+//
+//  Created by Claire on 날짜
+//  Copyright © 2025 ClaireBluePark. All rights reserved.
+//
+```
+
+### 2. 클래스/구조체 주석
+```swift
+/// 사용자 정보를 관리하는 뷰모델
+/// - 사용자 데이터 로딩 및 상태 관리
+/// - 네비게이션 처리
+final class UserViewModel: ObservableObject {
+    // 구현
+}
+```
+
+### 3. 함수 주석
+```swift
+/// 사용자 데이터를 서버에서 가져옵니다
+/// - Parameters:
+///   - userId: 사용자 ID
+///   - completion: 완료 콜백
+/// - Returns: 사용자 데이터 또는 에러
+func fetchUser(userId: String, completion: @escaping (Result<User, Error>) -> Void) {
+    // 구현
+}
+```
+
+### 4. 프로퍼티 주석
+```swift
+/// 현재 로딩 상태를 나타냅니다
+@Published var isLoading = false
+
+/// 사용자 목록 데이터
+@Published private(set) var users: [User] = []
+```
+
+## 코딩 컨벤션
+
+### 1. 접근 제어자
+- `public`: 모듈 외부에서 접근 가능
+- `internal`: 기본값, 같은 모듈 내에서만 접근
+- `private`: 같은 파일 내에서만 접근
+- `fileprivate`: 같은 파일 내의 모든 타입에서 접근
+
+### 2. 프로퍼티 순서
+1. `@Published` 프로퍼티
+2. `@State`, `@StateObject` 프로퍼티
+3. 일반 프로퍼티
+4. 의존성 프로퍼티
+
+### 3. 메서드 순서
+1. `init` 메서드
+2. `public` 메서드
+3. `internal` 메서드
+4. `private` 메서드
+
+### 4. MARK 사용
+```swift
+// MARK: - Properties
+// MARK: - Initialization
+// MARK: - Public Methods
+// MARK: - Private Methods
+// MARK: - Protocol Conformance
+```
+
+## 의존성 주입 규칙
+
+### 1. 프로토콜 기반 의존성
+```swift
+protocol UserServiceProtocol {
+    func fetchUsers() async throws -> [User]
+}
+
+final class UserService: UserServiceProtocol {
+    func fetchUsers() async throws -> [User] {
+        // 구현
+    }
+}
+```
+
+### 2. 생성자 주입
+```swift
+final class UserViewModel: ObservableObject {
+    private let userService: UserServiceProtocol
+    private let coordinator: UserCoordinatorProtocol
+    
+    init(userService: UserServiceProtocol, coordinator: UserCoordinatorProtocol) {
+        self.userService = userService
+        self.coordinator = coordinator
+    }
+}
+```
+
+## 에러 처리 규칙
+
+### 1. 커스텀 에러 정의
+```swift
+enum NetworkError: LocalizedError {
+    case invalidURL
+    case noData
+    case decodingError
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "잘못된 URL입니다"
+        case .noData:
+            return "데이터가 없습니다"
+        case .decodingError:
+            return "데이터 파싱 오류입니다"
+        }
+    }
+}
+```
+
+### 2. 에러 상태 관리
+```swift
+@Published var errorMessage: String?
+@Published var showingAlert = false
+
+func handleError(_ error: Error) {
+    DispatchQueue.main.async {
+        self.errorMessage = error.localizedDescription
+        self.showingAlert = true
+    }
+}
+```
+
+## 테스트 코드 규칙
+
+### 1. Mock 객체 생성
+```swift
+final class MockUserService: UserServiceProtocol {
+    var shouldReturnError = false
+    var mockUsers: [User] = []
+    
+    func fetchUsers() async throws -> [User] {
+        if shouldReturnError {
+            throw NetworkError.noData
+        }
+        return mockUsers
+    }
+}
+```
+
+### 2. 테스트 케이스 작성
+```swift
+@testable import AppName
+import XCTest
+
+final class UserViewModelTests: XCTestCase {
+    var viewModel: UserViewModel!
+    var mockService: MockUserService!
+    var mockCoordinator: MockUserCoordinator!
+    
+    override func setUp() {
+        super.setUp()
+        mockService = MockUserService()
+        mockCoordinator = MockUserCoordinator()
+        viewModel = UserViewModel(userService: mockService, coordinator: mockCoordinator)
+    }
+    
+    override func tearDown() {
+        viewModel = nil
+        mockService = nil
+        mockCoordinator = nil
+        super.tearDown()
+    }
+    
+    func test_사용자_데이터_로딩_성공() async {
+        // Given
+        let expectedUsers = [User(id: UUID(), name: "테스트 사용자")]
+        mockService.mockUsers = expectedUsers
+        
+        // When
+        await viewModel.loadUsers()
+        
+        // Then
+        XCTAssertEqual(viewModel.users, expectedUsers)
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+}
+```
+
+## 성능 최적화 규칙
+
+### 1. @MainActor 사용
+```swift
+@MainActor
+final class ViewModel: ObservableObject {
+    // UI 업데이트가 메인 스레드에서 실행됨
+}
+```
+
+### 2. 메모리 누수 방지
+```swift
+func setupObserver() {
+    NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleNotification),
+        name: .userDidLogin,
+        object: nil
+    )
+}
+
+deinit {
+    NotificationCenter.default.removeObserver(self)
+}
+```
+
+### 3. 적절한 캐싱
+```swift
+private var imageCache: [String: UIImage] = [:]
+
+func loadImage(url: String) -> UIImage? {
+    if let cachedImage = imageCache[url] {
+        return cachedImage
+    }
+    // 이미지 로딩 로직
+}
+```
