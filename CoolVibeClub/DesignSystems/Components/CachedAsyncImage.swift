@@ -9,6 +9,8 @@
 import SwiftUI
 import Kingfisher
 import Alamofire
+import CoreLocation
+import AVFoundation
 
 // MARK: - 캐싱된 비동기 이미지 컴포넌트
 struct CachedAsyncImage<Placeholder: View>: View {

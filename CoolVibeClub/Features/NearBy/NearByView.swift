@@ -1,5 +1,5 @@
 //
-//  MapView.swift
+//  NearByView.swift
 //  CoolVibeClub
 //
 //  Created by Claire on 2025.
@@ -9,7 +9,7 @@
 import SwiftUI
 import CoreLocation
 
-struct MapView: View {
+struct NearByView: View {
   @EnvironmentObject private var tabVisibilityStore: TabVisibilityStore
   @StateObject private var locationService = LocationService.shared
   
@@ -72,7 +72,7 @@ struct MapView: View {
       }
       .task {
         // 디버깅용 로그
-        print("🗺️ MapView task - LocationService 권한 상태: \(locationService.authorizationStatus)")
+        print("🗺️ NearByView task - LocationService 권한 상태: \(locationService.authorizationStatus)")
         
         // 위치 권한이 이미 승인되어 있다면 자동으로 위치 업데이트 시작
         if locationService.authorizationStatus == .authorized {
@@ -100,6 +100,6 @@ struct MapView: View {
 }
 
 #Preview {
-  MapView()
+  NearByView()
     .environmentObject(TabVisibilityStore())
 }

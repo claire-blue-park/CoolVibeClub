@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - ActivityClient Environment Key
-private struct ActivityClientKey: EnvironmentKey {
+internal struct ActivityClientKey: EnvironmentKey {
     static let defaultValue = ActivityClient.live
 }
 

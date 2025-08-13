@@ -1,7 +1,7 @@
 import Foundation
 
-// MARK: - ActivityDetailIntent
-enum ActivityDetailIntent {
+// MARK: - ActivityDetailIntentEnum (renamed to avoid conflict)
+enum ActivityDetailIntentEnum {
     case loadActivityDetail(String) // activityId
     case refreshActivityDetail(String)
     case clearError

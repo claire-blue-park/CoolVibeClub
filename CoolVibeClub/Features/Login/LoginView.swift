@@ -11,10 +11,13 @@ import SwiftUI
 struct LoginView: View {
   // MARK: - Properties
   var onLoginSuccess: () -> Void = {}
-  @State private var isSignIn: Bool = true
-  @State private var email: String = ""
-  @State private var isEmailValid: Bool = false
-  @State private var showSignupView: Bool = false
+  @StateObject private var intent: LoginIntent
+
+  // MARK: - Init
+  init(onLoginSuccess: @escaping () -> Void = {}) {
+    self.onLoginSuccess = onLoginSuccess
+    _intent = StateObject(wrappedValue: LoginIntent(onLoginSuccess: onLoginSuccess))
+  }
   
   // MARK: - Body
   var body: some View {
@@ -26,7 +29,7 @@ struct LoginView: View {
           .loginTitleStyle()
       }
       
-      Button(action: { isSignIn = true }) {
+      Button(action: { intent.send(.toggleSignIn(true)) }) {
         Text("이메일 로그인")
           .font(.system(size: 16, weight: .bold))
           .foregroundColor(CVCColor.grayScale90)
@@ -44,14 +47,19 @@ struct LoginView: View {
             .font(.caption)
             .foregroundColor(.gray)
           TextField(
-            "", text: $email, onEditingChanged: { _ in validateEmail() },
-            onCommit: validateEmail
+            "",
+            text: Binding(
+              get: { intent.state.email },
+              set: { intent.send(.setEmail($0)); intent.send(.validateEmail) }
+            ),
+            onEditingChanged: { _ in intent.send(.validateEmail) },
+            onCommit: { intent.send(.validateEmail) }
           )
           .autocapitalization(.none)
           .keyboardType(.emailAddress)
           .font(.system(size: 16, weight: .semibold))
         }
-        if isEmailValid {
+        if intent.state.isEmailValid {
           Image(systemName: "checkmark.circle.fill")
             .foregroundColor(.green)
         }
@@ -62,7 +70,7 @@ struct LoginView: View {
       )
       .padding(.horizontal)
       // Continue 버튼
-      Button(action: { handleLogin() }) {
+      Button(action: { intent.send(.tapContinue) }) {
         Text("계속")
           .foregroundColor(.white)
           .font(.system(size: 18, weight: .semibold))
@@ -89,7 +97,7 @@ struct LoginView: View {
       .padding(.bottom, 32)
       
       Button {
-        showSignupView = true
+        intent.send(.showSignup(true))
       } label: {
         HStack(spacing: 0) {
           Text("아직 클럽 회원이 아니신가요?  회원가입 하기")
@@ -106,28 +114,21 @@ struct LoginView: View {
       Spacer()
     }
     .background(Color.white.ignoresSafeArea())
-    .fullScreenCover(isPresented: $showSignupView) {
-      EmailSignupView(
+    .fullScreenCover(isPresented: Binding(
+      get: { intent.state.showSignupView },
+      set: { intent.send(.showSignup($0)) }
+    )) {
+      JoinView(
         onSignupSuccess: {
-          showSignupView = false
+          intent.send(.showSignup(false))
+          intent.send(.setError(nil))
           onLoginSuccess()
         },
         onBackToLogin: {
-          showSignupView = false
+          intent.send(.showSignup(false))
         }
       )
     }
-  }
-  
-  // MARK: - Methods
-  private func validateEmail() {
-    // 간단한 이메일 유효성 검사
-    isEmailValid = email.contains("@") && email.contains(".") && email.count > 5
-  }
-  
-  private func handleLogin() {
-    // 실제 로그인 로직 구현 후 성공 시 아래 호출
-    onLoginSuccess()
   }
 }
 

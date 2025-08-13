@@ -232,24 +232,24 @@ struct LocationStatusView: View {
 }
 
 // MARK: - Preview
-#Preview {
-  VStack(spacing: 0) {
-    LocationStatusView(
-      authorizationStatus: .notDetermined,
-      currentLocation: nil,
-      onRequestPermission: {}
-    )
-    
-    LocationStatusView(
-      authorizationStatus: .authorized,
-      currentLocation: CLLocation(latitude: 37.5665, longitude: 126.9780),
-      onRequestPermission: {}
-    )
-    
-    LocationStatusView(
-      authorizationStatus: .denied,
-      currentLocation: nil,
-      onRequestPermission: {}
-    )
-  }
-}
+//#Preview {
+//  VStack(spacing: 0) {
+//    LocationStatusView(
+//      authorizationStatus: .notDetermined,
+//      currentLocation: nil,
+//      onRequestPermission: {}
+//    )
+//    
+//    LocationStatusView(
+//      authorizationStatus: .authorized,
+//      currentLocation: CLLocation(latitude: 37.5665, longitude: 126.9780),
+//      onRequestPermission: {}
+//    )
+//    
+//    LocationStatusView(
+//      authorizationStatus: .denied,
+//      currentLocation: nil,
+//      onRequestPermission: {}
+//    )
+//  }
+//}

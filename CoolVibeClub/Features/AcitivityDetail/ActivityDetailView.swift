@@ -19,270 +19,11 @@ struct ActivityDetailView: View {
   @Environment(\.activityDetailClient) private var activityDetailClient
   @EnvironmentObject private var tabVisibilityStore: TabVisibilityStore
   
-  // 네비게이션을 위한 상태
-  @State private var showChatView = false
-  @State private var chatUserId = ""
-  @State private var chatNickname = ""
+  @StateObject private var intent: ActivityDetailIntent
   
-  // 스크롤 상태 관리
-  @State private var scrollOffset: CGFloat = 0
-  @State private var showNavBarTitle = false
-  
-  // 진짜 MVI: State만 있고 비즈니스 로직 없음
-  @State private var state = ActivityDetailState.initial
-  @State private var selectedImageIndex: Int = 0
-  @State private var isLiked: Bool = false
-  
-  // 예약 선택 관련 상태
-  @State private var selectedDate: String? = nil
-  @State private var selectedTime: String? = nil
-  @State private var participantCount: Int = 1
-  @State private var isOrderInProgress: Bool = false
-  @State private var showPaymentView: Bool = false
-  @State private var currentOrderResponse: OrderResponse?
-  @State private var showPaymentSuccessAlert: Bool = false
-  @State private var paymentSuccessMessage: String = ""
-  @State private var refreshTrigger: Int = 0 // UI 강제 새로고침용
-  
-  // MARK: - Intent Handlers (순수 함수형)
-  private func handleIntent(_ intent: ActivityDetailIntent) {
-    switch intent {
-    case .loadActivityDetail(let activityId):
-      Task { await loadActivityDetail(activityId) }
-      
-    case .refreshActivityDetail(let activityId):
-      Task { await loadActivityDetail(activityId) }
-      
-    case .clearError:
-      activityDetailReducer(state: &state, action: .setError(nil))
-      
-    case .navigateToChat(let userId, let nickname):
-      chatUserId = userId
-      chatNickname = nickname
-      showChatView = true
-      
-    case .clearNavigation:
-      showChatView = false
-    }
-  }
-  
-  private func loadActivityDetail(_ activityId: String) async {
-    activityDetailReducer(state: &state, action: .setLoading(true))
-    activityDetailReducer(state: &state, action: .setError(nil))
-    
-    do {
-      let detail = try await activityDetailClient.fetchActivityDetail(activityId)
-      activityDetailReducer(state: &state, action: .setActivityDetail(detail))
-    } catch {
-      activityDetailReducer(state: &state, action: .setError("상세 정보를 불러오는데 실패했습니다: \(error.localizedDescription)"))
-    }
-    
-    activityDetailReducer(state: &state, action: .setLoading(false))
-  }
-  
-  // MARK: - 주문 처리
-  private func handleOrderSubmission() async {
-    guard let selectedDate = selectedDate,
-          let selectedTime = selectedTime,
-          let activityDetail = state.activityDetail else {
-      print("❌ 주문에 필요한 정보가 부족합니다.")
-      return
-    }
-    
-    print("🛒 주문 시작!")
-    print("  📋 주문 정보:")
-    print("    - 액티비티 ID: \(activityData.activityId)")
-    print("    - 선택 날짜: \(selectedDate)")
-    print("    - 선택 시간: \(selectedTime)")
-    print("    - 참가자 수: \(participantCount)")
-    print("    - 총 가격: \(activityDetail.price.final)원")
-    
-    isOrderInProgress = true
-    
-    do {
-      print("🔄 서버로 주문 요청 전송 중...")
-      
-      let orderResponse = try await OrderService.shared.createOrder(
-        activityId: activityData.activityId,
-        reservationDate: selectedDate,
-        reservationTime: selectedTime,
-        participantCount: participantCount,
-        totalPrice: Double(activityDetail.price.final)
-      )
-      
-      print("✅ 주문 성공!")
-      print("  📦 응답 데이터:")
-      print("    - 주문 ID: \(orderResponse.orderId)")
-      print("    - 주문 코드: \(orderResponse.orderCode)")
-      print("    - 총 가격: \(orderResponse.totalPrice)원")
-      print("    - 생성 시간: \(orderResponse.createdAt)")
-      print("    - 수정 시간: \(orderResponse.updatedAt)")
-      
-      // 주문 성공 시 결제 화면 표시
-      await MainActor.run {
-        currentOrderResponse = orderResponse
-        showPaymentView = true
-      }
-      
-    } catch {
-      print("❌ 주문 실패!")
-      print("  🚫 오류 정보:")
-      print("    - 오류: \(error)")
-      print("    - 설명: \(error.localizedDescription)")
-      if let orderError = error as? OrderError {
-        print("    - 타입: \(orderError)")
-      }
-      // TODO: 에러 알림 표시
-    }
-    
-    await MainActor.run {
-      isOrderInProgress = false
-      print("🔄 주문 프로세스 완료")
-    }
-  }
-  
-  // MARK: - 결제 결과 처리
-  private func handlePaymentResult(_ iamportResponse: IamportResponse?) {
-    print("🚀 =========================")
-    print("🚀 handlePaymentResult 호출됨!")
-    print("🚀 현재 스레드: \(Thread.current)")
-    print("🚀 받은 응답: \(iamportResponse?.description ?? "nil")")
-    print("🚀 현재 시간: \(Date())")
-    print("🚀 =========================")
-    
-    // 결제 성공 시에만 검증 진행
-    if let response = iamportResponse,
-       let impUid = response.imp_uid,
-       response.success == true {
-      print("✅ 결제 성공! imp_uid: \(impUid)")
-      
-      // 서버에서 결제 검증 수행
-      Task {
-        do {
-          let validationResponse = try await PaymentService.shared.validatePayment(impUid: impUid)
-          print("🔐 결제 검증 완료!")
-          print("  💰 검증된 결제 정보:")
-          print("    - 결제 ID: \(validationResponse.paymentId)")
-          print("    - 주문 코드: \(validationResponse.orderItem.orderCode)")
-          print("    - 결제 금액: \(validationResponse.orderItem.totalPrice)원")
-          print("    - 결제 시간: \(validationResponse.orderItem.paidAt)")
-          print("    - 액티비티: \(validationResponse.orderItem.activity.title)")
-          print("    - 예약 날짜: \(validationResponse.orderItem.reservationItemName)")
-          print("    - 예약 시간: \(validationResponse.orderItem.reservationItemTime)")
-          print("    - 참가자 수: \(validationResponse.orderItem.participantCount)명")
-          
-          await MainActor.run {
-            print("🎉 결제 및 검증 완료! UI 업데이트 시작")
-            
-            // 결제 및 검증 완료 후 액티비티 상세 정보 새로고침
-            Task {
-              print("🔄 결제 및 검증 완료 후 액티비티 데이터 새로고침 중...")
-              await refreshActivityDetailAfterPayment()
-            }
-            
-            showPaymentView = false
-            
-            // 결제 성공 알림 표시
-            paymentSuccessMessage = "결제가 완료되었습니다!\n예약 정보가 업데이트되었습니다."
-            showPaymentSuccessAlert = true
-            print("💰 결제가 성공적으로 완료되었습니다!")
-          }
-          
-        } catch {
-          print("❌ 결제 검증 실패: \(error.localizedDescription)")
-          await MainActor.run {
-            if let paymentError = error as? PaymentValidationError,
-               case .tokenExpired = paymentError {
-              print("⚠️ 토큰 만료로 인한 검증 실패 - 결제는 완료됨")
-              
-              // 결제는 완료되었으므로 데이터 새로고침
-              Task {
-                print("🔄 토큰 만료로 검증 실패했지만 결제는 완료됨 - 데이터 새로고침")
-                await refreshActivityDetailAfterPayment()
-              }
-              
-              // 토큰 만료 알림 표시
-              paymentSuccessMessage = "결제가 완료되었습니다!\n(세션 만료로 검증은 생략됨)"
-              showPaymentSuccessAlert = true
-            } else {
-              print("⚠️ 결제는 완료되었지만 검증에 실패했습니다.")
-              
-              // 결제 완료로 간주하고 데이터 새로고침
-              Task {
-                print("🔄 검증 실패했지만 결제는 완료됨 - 데이터 새로고침")
-                await refreshActivityDetailAfterPayment()
-              }
-              
-              // 일반 검증 실패 알림 표시
-              paymentSuccessMessage = "결제가 완료되었습니다!\n예약 정보가 업데이트되었습니다."
-              showPaymentSuccessAlert = true
-            }
-            showPaymentView = false
-          }
-        }
-      }
-      
-    } else {
-      print("❌ 결제 실패 또는 취소")
-      if let response = iamportResponse {
-        print("  📋 실패 정보:")
-        print("    - success: \(response.success)")
-        print("    - error_msg: \(response.error_msg ?? "없음")")
-        print("    - error_code: \(response.error_code ?? "없음")")
-        
-        // 결제 실패 알림 표시
-        if let errorMsg = response.error_msg, !errorMsg.isEmpty {
-          paymentSuccessMessage = "결제에 실패했습니다.\n\(errorMsg)"
-        } else {
-          paymentSuccessMessage = "결제가 취소되었습니다."
-        }
-      } else {
-        print("🚫 결제 응답 자체가 nil - 사용자가 취소했거나 오류 발생")
-        paymentSuccessMessage = "결제가 취소되었습니다."
-      }
-      showPaymentSuccessAlert = true
-      showPaymentView = false
-    }
-  }
-  
-  // MARK: - 결제 완료 후 데이터 새로고침
-  private func refreshActivityDetailAfterPayment() async {
-    print("🔄 결제 완료 후 액티비티 상세 정보 새로고침 시작")
-    print("🔄 현재 스레드: \(Thread.current)")
-    
-    // 기존 선택된 예약 정보 초기화
-    await MainActor.run {
-      selectedDate = nil
-      selectedTime = nil
-      print("🔄 선택된 날짜/시간 초기화 완료")
-    }
-    
-    // 잠시 대기 (서버에서 데이터 업데이트 처리 시간 고려)
-    try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
-    
-    print("🔄 서버에서 최신 액티비티 데이터 요청 중...")
-    
-    // 서버에서 최신 액티비티 데이터 가져오기
-    await loadActivityDetail(activityData.activityId)
-    
-    await MainActor.run {
-      print("✅ 액티비티 데이터 새로고침 완료")
-      print("📋 예약 가능한 시간대가 업데이트되었습니다")
-      print("📊 현재 state.activityDetail 상태: \(state.activityDetail != nil ? "존재함" : "없음")")
-      if let reservationList = state.activityDetail?.reservationList {
-        print("📊 예약 리스트 개수: \(reservationList.count)")
-        for (index, reservation) in reservationList.enumerated() {
-          print("📊 예약 \(index): \(reservation.itemName), 시간대 \(reservation.times.count)개")
-          for time in reservation.times {
-            print("📊   - \(time.time): \(time.isReserved ? "예약됨" : "예약가능")")
-          }
-        }
-      }
-      
-      // UI 강제 새로고침 트리거
-      refreshTrigger += 1
-      print("🔄 UI 강제 새로고침 트리거: \(refreshTrigger)")
-    }
+  init(activityData: ActivityInfoData, activityDetailClient: ActivityDetailClient = .live) {
+    self.activityData = activityData
+    _intent = StateObject(wrappedValue: ActivityDetailIntent(activityDetailClient: activityDetailClient))
   }
   
   var body: some View {
@@ -299,8 +40,11 @@ struct ActivityDetailView: View {
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: []) {
           // MARK: - 배경 이미지 (스테이터스 바까지 확장)
           ZStack(alignment: .bottom) {
-            if let detail = state.activityDetail, !detail.thumbnails.isEmpty {
-              TabView(selection: $selectedImageIndex) {
+            if let detail = intent.state.activityDetail, !detail.thumbnails.isEmpty {
+              TabView(selection: Binding(
+                get: { intent.state.selectedImageIndex },
+                set: { intent.send(.setSelectedImageIndex($0)) }
+              )) {
                 ForEach(Array(detail.thumbnails.enumerated()), id: \.offset) { index, thumbnail in
                   ActivityCardMediaView(url: thumbnail)
                     .tag(index)
@@ -345,17 +89,17 @@ struct ActivityDetailView: View {
           VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 14) {
               /// 1. 제목
-              Text(state.activityDetail?.title ?? activityData.title)
+              Text(intent.state.activityDetail?.title ?? activityData.title)
                 .activityTitleStyle(CVCColor.grayScale90)
               
               /// 2. 국가
-              Text(state.activityDetail?.country ?? activityData.country)
+              Text(intent.state.activityDetail?.country ?? activityData.country)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(CVCColor.grayScale60)
             }
             
             /// 3. 태그
-            if let tags = state.activityDetail?.tags, !tags.isEmpty {
+            if let tags = intent.state.activityDetail?.tags, !tags.isEmpty {
               ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                   ForEach(tags, id: \.self) { tag in
@@ -366,7 +110,7 @@ struct ActivityDetailView: View {
             }
             
             /// 4. 설명
-            if let description = state.activityDetail?.description {
+            if let description = intent.state.activityDetail?.description {
               Text(description)
                 .font(.system(size: 12))
                 .foregroundColor(CVCColor.grayScale60)
@@ -378,7 +122,7 @@ struct ActivityDetailView: View {
               HStack(spacing: 2) {
                 CVCImage.Action.buy.template
                   .frame(width: 14, height: 14)
-                Text("누적 구매 \(state.activityDetail?.totalOrderCount ?? 0)회")
+                Text("누적 구매 \(intent.state.activityDetail?.totalOrderCount ?? 0)회")
                   .font(.system(size: 12))
               }
               .foregroundStyle(CVCColor.grayScale60)
@@ -387,22 +131,22 @@ struct ActivityDetailView: View {
                 CVCImage.Action.keep.template
                   .frame(width: 14, height: 14)
                   .foregroundStyle(CVCColor.grayScale60)
-                Text("KEEP \(state.activityDetail?.keepCount ?? 0)회")
+                Text("KEEP \(intent.state.activityDetail?.keepCount ?? 0)회")
                   .font(.system(size: 12))
               }
               .foregroundStyle(CVCColor.grayScale60)
             }
             
             ActivityLimitView(
-              ageLimit: state.activityDetail?.restrictions?.minAge,
-              heightLimit: state.activityDetail?.restrictions?.minHeight,
-              maxParticipants: state.activityDetail?.restrictions?.maxParticipants
+              ageLimit: intent.state.activityDetail?.restrictions?.minAge,
+              heightLimit: intent.state.activityDetail?.restrictions?.minHeight,
+              maxParticipants: intent.state.activityDetail?.restrictions?.maxParticipants
             )
             
             // MARK: - 가격 정보
             VStack(alignment: .leading, spacing: 12) {
-              let original = state.activityDetail?.price.original ?? 0
-              let final = state.activityDetail?.price.final ?? 0
+              let original = intent.state.activityDetail?.price.original ?? 0
+              let final = intent.state.activityDetail?.price.final ?? 0
               let percentage = original == 0 || final >= original ? 0 : Int(Double(original - final) / Double(original) * 100)
               if original != final {
                 Text("\(original)원")
@@ -422,7 +166,7 @@ struct ActivityDetailView: View {
             }
             
             // MARK: - 커리큘럼
-            if let schedule = state.activityDetail?.schedule {
+            if let schedule = intent.state.activityDetail?.schedule {
               ActivityCurriculumView(
                 items: schedule.map { detailSchedule in
                   CurriculumItem(
@@ -431,9 +175,9 @@ struct ActivityDetailView: View {
                     description: nil
                   )
                 },
-                location: state.activityDetail?.geolocation.map { geo in
+                location: intent.state.activityDetail?.geolocation.map { geo in
                   CurriculumLocation(
-                    name: "\(state.activityDetail?.country ?? ""), \(state.activityDetail?.title ?? "")",
+                    name: "\(intent.state.activityDetail?.country ?? ""), \(intent.state.activityDetail?.title ?? "")",
                     address: "위치: \(geo.latitude), \(geo.longitude)",
                     mapImage: nil
                   )
@@ -442,7 +186,7 @@ struct ActivityDetailView: View {
             }
             
             // MARK: - 예약
-            if let reservationList = state.activityDetail?.reservationList {
+            if let reservationList = intent.state.activityDetail?.reservationList {
               ActivityReservationView(
                 availableDates: reservationList.enumerated().map { index, reservation in
                   // 서버에서 받은 날짜 문자열 파싱 (예: "2025-08-05")
@@ -481,12 +225,12 @@ struct ActivityDetailView: View {
                   )
                 },
                 onReservationChanged: { date, timeSlot in
-                  selectedDate = date.id  // 실제 날짜 문자열 (예: "2025-08-05")
-                  selectedTime = timeSlot?.displayTime  // 시간 (예: "10:00")
-                  print("선택된 예약: 날짜=\(selectedDate ?? "없음"), 시간=\(selectedTime ?? "없음")")
+                  intent.send(.setSelectedDate(date.id))
+                  intent.send(.setSelectedTime(timeSlot?.displayTime))
+                  print("선택된 예약: 날짜=\(intent.state.selectedDate ?? "없음"), 시간=\(intent.state.selectedTime ?? "없음")")
                 }
               )
-              .id(refreshTrigger) // refreshTrigger 변경 시 뷰 재생성
+              .id(intent.state.refreshTrigger) // refreshTrigger 변경 시 뷰 재생성
             } else {
               Text("예약 가능한 날짜가 없습니다.")
                 .foregroundColor(CVCColor.grayScale45)
@@ -494,7 +238,7 @@ struct ActivityDetailView: View {
             }
             
             // MARK: - 크리에이터 정보
-            if let creator = state.activityDetail?.creator {
+            if let creator = intent.state.activityDetail?.creator {
               ActivityCreatorView(
                 creator: CreatorInfo(
                   userId: creator.userId,
@@ -503,7 +247,7 @@ struct ActivityDetailView: View {
                   introduction: creator.introduction
                 ),
                 onContactTap: {
-                  handleIntent(.navigateToChat(userId: creator.userId, nickname: creator.nick))
+                  intent.send(.navigateToChat(userId: creator.userId, nickname: creator.nick))
                 }
               )
             }
@@ -517,9 +261,9 @@ struct ActivityDetailView: View {
       .coordinateSpace(name: "scroll")
       .ignoresSafeArea(edges: .top) // ScrollView 자체도 상단 safe area 무시
       .onPreferenceChange(ScrollOffsetPreferenceKey.self) { offset in
-        scrollOffset = offset
+        intent.send(.setScrollOffset(offset))
         withAnimation(.easeInOut(duration: 0.2)) {
-          showNavBarTitle = offset < -200
+          intent.send(.setShowNavBarTitle(offset < -200))
         }
       }
       
@@ -527,7 +271,7 @@ struct ActivityDetailView: View {
       VStack {
         Spacer()
         HStack {
-          if let detail = state.activityDetail {
+          if let detail = intent.state.activityDetail {
             Text("\(detail.price.final)원")
               .priceStyle()
               .foregroundColor(CVCColor.grayScale90)
@@ -539,21 +283,19 @@ struct ActivityDetailView: View {
           
           Spacer()
           
-          Button(isOrderInProgress ? "주문 중..." : "결제하기") {
-            Task {
-              await handleOrderSubmission()
-            }
+          Button(intent.state.isOrderInProgress ? "주문 중..." : "결제하기") {
+            intent.send(.submitOrder)
           }
-          .disabled(isOrderInProgress || selectedDate == nil || selectedTime == nil)
+          .disabled(intent.state.isOrderInProgress || intent.state.selectedDate == nil || intent.state.selectedTime == nil)
           .padding(.horizontal, 32)
           .padding(.vertical, 12)
           .background(
-            (selectedDate != nil && selectedTime != nil && !isOrderInProgress) 
+            (intent.state.selectedDate != nil && intent.state.selectedTime != nil && !intent.state.isOrderInProgress) 
             ? CVCColor.primary 
             : CVCColor.grayScale30
           )
           .foregroundColor(
-            (selectedDate != nil && selectedTime != nil && !isOrderInProgress) 
+            (intent.state.selectedDate != nil && intent.state.selectedTime != nil && !intent.state.isOrderInProgress) 
             ? CVCColor.grayScale0 
             : CVCColor.grayScale60
           )
@@ -575,8 +317,8 @@ struct ActivityDetailView: View {
           
           Spacer()
           
-          navBarButtonView(for: .like(isLiked: isLiked, action: {
-            isLiked.toggle()
+          navBarButtonView(for: .like(isLiked: intent.state.isLiked, action: {
+            intent.send(.setIsLiked(!intent.state.isLiked))
           }))
         }
         .padding(.horizontal, 16)
@@ -592,29 +334,40 @@ struct ActivityDetailView: View {
       print("🎯 Activity data: \(activityData.title)")
       print("🎯 Activity ID: \(activityData.activityId)")
       tabVisibilityStore.setVisibility(false)
-      handleIntent(.loadActivityDetail(activityData.activityId))
+      intent.send(.loadActivityDetail(activityData.activityId))
     }
-    .navigationDestination(isPresented: $showChatView) {
-      ChatView(roomId: "temp_\(chatUserId)", opponentNick: chatNickname)
+    .navigationDestination(isPresented: Binding(
+      get: { intent.state.showChatView },
+      set: { _ in intent.send(.clearNavigation) }
+    )) {
+      ChatView(roomId: "temp_\(intent.state.chatUserId)", opponentNick: intent.state.chatNickname)
         .environmentObject(tabVisibilityStore)
         .toolbar(.hidden, for: .tabBar)
         .navigationBarHidden(true) // ChatView에서도 네비게이션 바 숨김
     }
-    .sheet(isPresented: $showPaymentView) {
-      if let orderResponse = currentOrderResponse {
+    .sheet(isPresented: Binding(
+      get: { intent.state.showPaymentView },
+      set: { intent.send(.setShowPaymentView($0)) }
+    )) {
+      if let orderResponse = intent.state.currentOrderResponse {
         IamportPaymentView(
           orderResponse: orderResponse,
           activityTitle: activityData.title,
-          onPaymentResult: handlePaymentResult
+          onPaymentResult: { response in
+            intent.send(.handlePaymentResult(response))
+          }
         )
       }
     }
-    .alert("결제 결과", isPresented: $showPaymentSuccessAlert) {
+    .alert("결제 결과", isPresented: Binding(
+      get: { intent.state.showPaymentSuccessAlert },
+      set: { intent.send(.setShowPaymentSuccessAlert($0)) }
+    )) {
       Button("확인", role: .cancel) {
-        showPaymentSuccessAlert = false
+        intent.send(.setShowPaymentSuccessAlert(false))
       }
     } message: {
-      Text(paymentSuccessMessage)
+      Text(intent.state.paymentSuccessMessage)
     }
   }
 }
@@ -912,8 +665,8 @@ struct ActivityDetailView_Previews: PreviewProvider {
         tags: ["등반", "제주도", "한라산", "가이드동행"],
         originalPrice: "100,000원",
         discountRate: 11
-      )
+      ),
+      activityDetailClient: .mock
     )
-    .environment(\.activityDetailClient, .mock)
   }
 }

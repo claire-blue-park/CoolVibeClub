@@ -49,6 +49,7 @@ final class ChatService {
     print("🔍 roomId: \(roomId)")
     print("🔍 content: \(content)")
     print("🔍 files: \(files)")
+    print("🔍 files.isEmpty: \(files.isEmpty)")
     
     let endpoint = ChatEndpoint(requestType: .sendMessage(roomId: roomId, content: content, files: files))
     return try await networkManager.fetch(

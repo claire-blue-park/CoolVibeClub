@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct HomeNavigationView: View {
+struct InsightNavigationView: View {
   @StateObject private var navigation = NavigationRouter<HomePath>()
   
   var body: some View {
     NavigationStack(path: $navigation.path) {
-      HomeView()
+      InsightView()
         .environmentObject(navigation)
         .navigationDestination(for: HomePath.self) { path in
           switch path {

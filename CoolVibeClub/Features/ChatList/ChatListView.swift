@@ -13,11 +13,7 @@ import SwiftUI
 struct DefaultErrorResponse: Decodable {}
 
 struct ChatListView: View {
-  @State private var chatRooms: [ChatRoom] = []
-  @State private var allChatRooms: [ChatRoom] = []
-  @State private var isLoading: Bool = false
-  @State private var errorMessage: String? = nil
-  @State private var searchText: String = ""
+  @StateObject private var intent = ChatListIntent()
   
   var body: some View {
     NavigationStack {
@@ -28,22 +24,38 @@ struct ChatListView: View {
         
         // MARK: - 검색창
         BorderLineSearchBar(
-          searchText: $searchText,
+          searchText: Binding(
+            get: { intent.state.searchText },
+            set: { intent.send(.searchTextChanged($0)) }
+          ),
           placeholder: "채팅방 검색",
-          onSearchTextChanged: filterChatRooms
+          onSearchTextChanged: { searchText in
+            intent.send(.searchTextChanged(searchText))
+          }
         )
         .padding(.horizontal, 16)
         .padding(.bottom, 20)
         
         ZStack(alignment: .top) {
-          if isLoading {
+          if intent.state.isLoading {
             ProgressView("채팅방 목록을 불러오는 중...")
               .padding(.top, 100)
-          } else if let errorMessage = errorMessage {
-            Text(errorMessage)
-              .foregroundColor(.red)
-              .padding(.top, 100)
-          } else if chatRooms.isEmpty {
+          } else if let errorMessage = intent.state.error {
+            VStack(spacing: 12) {
+              Text(errorMessage)
+                .foregroundColor(.red)
+                .padding(.top, 100)
+              Button("다시 시도") {
+                intent.send(.clearError)
+                intent.send(.refresh)
+              }
+              .padding(.horizontal, 20)
+              .padding(.vertical, 8)
+              .background(CVCColor.primary)
+              .foregroundColor(.white)
+              .cornerRadius(8)
+            }
+          } else if intent.state.chatRooms.isEmpty {
             VStack {
               Spacer()
               Text("아직 채팅내용이 없습니다")
@@ -52,7 +64,7 @@ struct ChatListView: View {
               Spacer()
             }
           } else {
-            List(chatRooms, id: \.roomId) { room in
+            List(intent.state.chatRooms, id: \.roomId) { room in
               let opponent = getOpponent(from: room)
               ZStack {
                 NavigationLink(destination: ChatView(roomId: room.roomId, opponentNick: opponent.nick)) {
@@ -103,38 +115,7 @@ struct ChatListView: View {
       }
     }
     .onAppear {
-      fetchChatRooms()
-    }
-  }
-  
-  private func fetchChatRooms() {
-    isLoading = true
-    errorMessage = nil
-    
-    Task {
-      do {
-        let response: ChatRoomsResponse = try await NetworkManager.shared.fetch(
-          from: ChatEndpoint(requestType: .fetchChatRooms)
-        ) { statusCode, errorResponse in
-          return ChatRoomError.map(statusCode: statusCode, message: errorResponse.message)
-        }
-        
-        await MainActor.run {
-          self.allChatRooms = response.data
-          self.chatRooms = response.data
-          self.isLoading = false
-        }
-        
-        print("✅ 채팅방 목록 로딩 성공: \(response.data.count)개")
-        
-      } catch {
-        print("❌ 채팅방 목록 로딩 실패: \(error)")
-        
-        await MainActor.run {
-          self.errorMessage = "채팅방 목록을 불러오지 못했습니다: \(error.localizedDescription)"
-          self.isLoading = false
-        }
-      }
+      intent.send(.loadChatRooms)
     }
   }
   
@@ -194,23 +175,6 @@ struct ChatListView: View {
     }
   }
   
-  // MARK: - 검색 기능
-  private func filterChatRooms(_ searchText: String) {
-    if searchText.isEmpty {
-      chatRooms = allChatRooms
-    } else {
-      chatRooms = allChatRooms.filter { room in
-        // 상대방 닉네임으로 검색
-        let opponent = getOpponent(from: room)
-        let nicknameMatch = opponent.nick.localizedCaseInsensitiveContains(searchText)
-        
-        // 마지막 채팅 내용으로 검색
-        let lastChatMatch = room.lastChat?.content.localizedCaseInsensitiveContains(searchText) ?? false
-        
-        return nicknameMatch || lastChatMatch
-      }
-    }
-  }
 }
 
 #Preview {

@@ -387,7 +387,7 @@ struct PostImageGrid: View {
   }
 }
 
-#Preview {
-  ActivityPostSection(currentLocation: (latitude: 37.5665, longitude: 126.9780))
-    .environment(\.activityPostClient, .mock)
-}
+//#Preview {
+//  ActivityPostSection(currentLocation: (latitude: 37.5665, longitude: 126.9780))
+//    .environment(\.activityPostClient, .mock)
+//}

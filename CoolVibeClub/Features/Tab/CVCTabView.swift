@@ -20,7 +20,7 @@ struct CVCTabView: View {
     ZStack {
       TabView(selection: $selected) {
         Group {
-          HomeNavigationView()
+          InsightNavigationView()
             .safeAreaInset(edge: .bottom, spacing: 0) {
               Color.clear
                 .frame(height: tabVisibilityStore.isVisible ? 100 : 0)
@@ -28,7 +28,7 @@ struct CVCTabView: View {
             .environmentObject(tabVisibilityStore)
             .tag(Tab.tab1)
           
-          MapView()
+          NearByView()
             .safeAreaInset(edge: .bottom, spacing: 0) {
               Color.clear
                 .frame(height: tabVisibilityStore.isVisible ? 100 : 0)

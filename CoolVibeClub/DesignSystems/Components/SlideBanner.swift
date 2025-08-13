@@ -7,6 +7,9 @@
 //
 
 import SwiftUI
+import Alamofire
+import CoreLocation
+import AVFoundation
 
 struct SlideBanner: View {
   @State private var showWebView = false
