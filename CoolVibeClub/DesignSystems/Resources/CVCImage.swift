@@ -82,6 +82,7 @@ enum CVCImage {
     case message
     case sparkle
     case info
+    case time
     
     var value: Image {
       let name = switch self {
@@ -102,6 +103,7 @@ enum CVCImage {
       case .message: "ic_message"
       case .sparkle: "ic_sparkle"
       case .info: "ic_info"
+      case .time: "ic_time"
       }
       return Image(name)
     }

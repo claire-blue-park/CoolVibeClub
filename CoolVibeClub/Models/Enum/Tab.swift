@@ -20,7 +20,7 @@ enum Tab {
       case .tab1:
         "INSIGHT"
       case .tab2:
-        "MAP"
+        "NEARBY"
       case .tab3:
         "MESSAGE"
       case .tab4:

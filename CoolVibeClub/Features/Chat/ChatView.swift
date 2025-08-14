@@ -214,12 +214,14 @@ struct Message: Identifiable {
   let isMe: Bool
   var status: MessageStatus
   var files: [String]? // File paths added
+  let timestamp: Date
   
-  init(text: String, isMe: Bool, status: MessageStatus = .sent, files: [String]? = nil) {
+  init(text: String, isMe: Bool, status: MessageStatus = .sent, files: [String]? = nil, timestamp: Date = Date()) {
     self.text = text
     self.isMe = isMe
     self.status = status
     self.files = files
+    self.timestamp = timestamp
   }
 }
 
@@ -299,7 +301,7 @@ struct MessageContentView: View {
             //                        }
             //
             if imageFiles.count == 1 {
-              AsyncImageView(filePath: imageFiles[0])
+              ChatAsyncImageView(filePath: imageFiles[0])
                 .frame(width: 160, height: 160)
                 .cornerRadius(12)
                 .clipped()
@@ -310,7 +312,7 @@ struct MessageContentView: View {
             } else {
               HStack(spacing: 8) {
                 ForEach(imageFiles, id: \.self) { filePath in
-                  AsyncImageView(filePath: filePath)
+                  ChatAsyncImageView(filePath: filePath)
                     .frame(width: 160 / CGFloat(min(imageFiles.count, 3)), height: 160)
                     .cornerRadius(12)
                     .clipped()
@@ -340,7 +342,29 @@ struct MessageContentView: View {
           .foregroundColor(CVCColor.grayScale90)
           .cornerRadius(16)
       }
+      
+      // 시간 표시
+      Text(formatTime(message.timestamp))
+        .font(.system(size: 11))
+        .foregroundColor(CVCColor.grayScale45)
+        .padding(.top, 2)
     }
+  }
+  
+  private func formatTime(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    
+    let calendar = Calendar.current
+    if calendar.isDateInToday(date) {
+      formatter.dateFormat = "HH:mm"
+    } else if calendar.isDateInYesterday(date) {
+      formatter.dateFormat = "어제 HH:mm"
+    } else {
+      formatter.dateFormat = "M월 d일 HH:mm"
+    }
+    
+    return formatter.string(from: date)
   }
   
   private func isImageFile(_ filePath: String) -> Bool {
@@ -419,7 +443,7 @@ struct MessageInputView: View {
   }
 }
 
-struct AsyncImageView: View {
+struct ChatAsyncImageView: View {
   let filePath: String
   @State private var image: UIImage? = nil
   @State private var isLoading: Bool = true
@@ -490,7 +514,7 @@ struct ImagePreviewView: View {
         
         TabView(selection: $currentIndex) {
           ForEach(Array(images.enumerated()), id: \.offset) { index, imagePath in
-            AsyncImageView(filePath: imagePath)
+            ChatAsyncImageView(filePath: imagePath)
               .aspectRatio(contentMode: .fit)
               .tag(index)
           }

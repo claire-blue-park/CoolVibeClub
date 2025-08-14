@@ -67,7 +67,8 @@ final class ChatIntent: ObservableObject, Intent {
       let currentUserId = UserDefaultsHelper.shared.getUserId()
       let isMe = chatMessage.sender.userId == currentUserId
       if !isMe {
-        let newMessage = Message(text: chatMessage.content, isMe: false, status: .sent, files: chatMessage.files)
+        let timestamp = parseServerTimestamp(chatMessage.createdAt) ?? Date()
+        let newMessage = Message(text: chatMessage.content, isMe: false, status: .sent, files: chatMessage.files, timestamp: timestamp)
         self.state.messages.append(newMessage)
       }
 
@@ -109,7 +110,8 @@ final class ChatIntent: ObservableObject, Intent {
       let currentUserId = UserDefaultsHelper.shared.getUserId()
       self.state.messages = chatHistory.data.map { chatMessage in
         let isMe = chatMessage.sender.userId == currentUserId
-        return Message(text: chatMessage.content, isMe: isMe, files: chatMessage.files)
+        let timestamp = parseServerTimestamp(chatMessage.createdAt) ?? Date()
+        return Message(text: chatMessage.content, isMe: isMe, files: chatMessage.files, timestamp: timestamp)
       }
       self.state.isLoading = false
 
@@ -235,5 +237,31 @@ final class ChatIntent: ObservableObject, Intent {
     }
     let renderer = UIGraphicsImageRenderer(size: newSize)
     return renderer.image { _ in image.draw(in: CGRect(origin: .zero, size: newSize)) }
+  }
+  
+  private func parseServerTimestamp(_ timestamp: String) -> Date? {
+    let formatter = DateFormatter()
+    
+    // ISO 8601 형식 시도 (예: "2025-08-13T07:42:07Z")
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    formatter.timeZone = TimeZone(abbreviation: "UTC")
+    if let date = formatter.date(from: timestamp) {
+      return date
+    }
+    
+    // ISO 8601 with milliseconds (예: "2025-08-13T07:42:07.123Z")
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    if let date = formatter.date(from: timestamp) {
+      return date
+    }
+    
+    // 다른 일반적인 형식들 시도
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    formatter.timeZone = TimeZone.current
+    if let date = formatter.date(from: timestamp) {
+      return date
+    }
+    
+    return nil
   }
 }

@@ -10,41 +10,13 @@ import SwiftUI
 
 struct ActivityPostSection: View {
   @State private var selectedDistance: Double = 3.0
-  @State private var posts: [ActivityPost] = []
-  @State private var isLoading: Bool = false
-  @State private var errorMessage: String?
-  @State private var nextCursor: String?
   
-  @Environment(\.activityPostClient) private var activityPostClient
-  let currentLocation: (latitude: Double, longitude: Double)?
+  let posts: [ActivityPost]
+  let isLoading: Bool
+  let hasMorePosts: Bool
+  let onLoadMore: () -> Void
+  let onRefresh: () -> Void
   
-  // MARK: - Methods
-  private func loadPosts() async {
-    isLoading = true
-    errorMessage = nil
-    
-    do {
-      let response = try await activityPostClient.fetchPostsByGeolocation(
-        nil, // country
-        nil, // category
-        currentLocation?.longitude.description,
-        currentLocation?.latitude.description,
-        "\(Int(selectedDistance * 1000))", // 킬로미터를 미터로 변환
-        5, // limit
-        nil, // next
-        "createdAt" // orderBy
-      )
-      
-      posts = response.data
-      nextCursor = response.nextCursor
-      
-    } catch {
-      errorMessage = "포스트를 불러오는데 실패했습니다: \(error.localizedDescription)"
-      print("❌ ActivityPost 로딩 실패: \(error)")
-    }
-    
-    isLoading = false
-  }
   
   var body: some View {
     VStack(alignment: .leading, spacing: 20) {
@@ -55,7 +27,7 @@ struct ActivityPostSection: View {
           .font(.system(size: 14, weight: .bold))
         Spacer()
         Button {
-          // 최신순 정렬 액션
+          onRefresh()
         } label: {
           HStack(spacing: 4) {
             Text("최신순")
@@ -132,33 +104,13 @@ struct ActivityPostSection: View {
       
       // MARK: - 포스트 리스트
       
-      if isLoading {
+      if isLoading && posts.isEmpty {
         HStack {
           Spacer()
           ProgressView("포스트를 불러오는 중...")
             .foregroundStyle(CVCColor.grayScale60)
           Spacer()
         }
-        .padding(.vertical, 40)
-      } else if let errorMessage = errorMessage {
-        VStack(spacing: 16) {
-          Text("오류 발생")
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundStyle(CVCColor.grayScale90)
-          Text(errorMessage)
-            .font(.system(size: 14))
-            .foregroundStyle(CVCColor.grayScale60)
-            .multilineTextAlignment(.center)
-          Button("다시 시도") {
-            Task { await loadPosts() }
-          }
-          .padding(.horizontal, 20)
-          .padding(.vertical, 8)
-          .background(CVCColor.primary)
-          .foregroundStyle(.white)
-          .cornerRadius(8)
-        }
-        .padding(.horizontal, 16)
         .padding(.vertical, 40)
       } else if posts.isEmpty {
         HStack {
@@ -176,25 +128,48 @@ struct ActivityPostSection: View {
         }
  
       } else {
-        LazyVStack(spacing: 20) {
-          ForEach(posts) { post in
+        LazyVStack(spacing: 0) {
+          ForEach(Array(posts.enumerated()), id: \.element.id) { index, post in
             ActivityPostCard(post: post)
+            
+            // 마지막 포스트가 아니면 divider 추가
+            if index < posts.count - 1 {
+              Divider()
+                .frame(height: 1)
+                .background(CVCColor.grayScale15)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+            }
           }
+          
+          // 더 보기 버튼 또는 로딩 인디케이터
+//          if hasMorePosts {
+//            if isLoading {
+//              HStack {
+//                Spacer()
+//                ProgressView()
+//                  .scaleEffect(0.8)
+//                Spacer()
+//              }
+//              .padding(.vertical, 20)
+//            } else {
+//              Button(action: onLoadMore) {
+//                Text("더 보기")
+//                  .font(.system(size: 14, weight: .medium))
+//                  .foregroundStyle(CVCColor.primary)
+//                  .padding(.horizontal, 20)
+//                  .padding(.vertical, 10)
+//                  .background(CVCColor.primaryLight.opacity(0.1))
+//                  .cornerRadius(20)
+//              }
+//              .frame(maxWidth: .infinity)
+//              .padding(.vertical, 10)
+//            }
+//          }
         }
-        .padding(.horizontal, 16)
       }
       
       Spacer(minLength: 100)
-    }
-    .task {
-      if currentLocation != nil {
-        await loadPosts()
-      }
-    }
-    .onChange(of: selectedDistance) { _ in
-      if currentLocation != nil {
-        Task { await loadPosts() }
-      }
     }
   }
 }
@@ -207,9 +182,8 @@ struct ActivityPostCard: View {
     VStack(alignment: .leading, spacing: 12) {
       // MARK: - 유저 정보
       HStack(spacing: 12) {
-        CachedAsyncImage(
-          url: URL(string: post.creator.profileImage ?? ""),
-          contentMode: .fill
+        AsyncImageView(
+          path: post.creator.profileImage ?? ""
         ) {
           Image(systemName: "person.circle.fill")
             .font(.system(size: 24))
@@ -221,15 +195,44 @@ struct ActivityPostCard: View {
         
         VStack(alignment: .leading, spacing: 2) {
           Text(post.creator.nick)
-            .font(.system(size: 14, weight: .semibold))
+            .font(.system(size: 13, weight: .semibold))
             .foregroundStyle(CVCColor.grayScale90)
           
-          Text(post.formattedCreatedAt)
-            .font(.system(size: 12, weight: .regular))
-            .foregroundStyle(CVCColor.grayScale60)
+          HStack(spacing: 2) {
+            CVCImage.Action.time.template
+              .frame(width: 12, height: 12)
+              .foregroundStyle(CVCColor.grayScale60)
+            
+            Text(post.formattedCreatedAt)
+              .font(.system(size: 11, weight: .regular))
+              .foregroundStyle(CVCColor.grayScale60)
+          }
         }
         
         Spacer()
+        
+        // MARK: - More Button
+        Menu {
+          Button(action: {
+            // Handle edit action
+            print("Edit post: \(post.title)")
+          }) {
+            Label("수정", systemImage: "pencil")
+          }
+          
+          Button(role: .destructive, action: {
+            // Handle delete action
+            print("Delete post: \(post.title)")
+          }) {
+            Label("삭제", systemImage: "trash")
+          }
+        } label: {
+          Image(systemName: "ellipsis")
+            .font(.system(size: 16))
+            .foregroundStyle(CVCColor.grayScale60)
+            .padding(8)
+            .contentShape(Rectangle()) // Ensures the entire area is tappable
+        }
       }
       
       // MARK: - 이미지 그리드
@@ -240,6 +243,7 @@ struct ActivityPostCard: View {
         .font(.system(size: 16, weight: .bold))
         .foregroundStyle(CVCColor.grayScale90)
         .multilineTextAlignment(.leading)
+        .padding(.horizontal, 8)
       
       // MARK: - 설명
       Text(post.content)
@@ -247,29 +251,23 @@ struct ActivityPostCard: View {
         .foregroundStyle(CVCColor.grayScale75)
         .multilineTextAlignment(.leading)
         .lineLimit(3)
+        .padding(.horizontal, 8)
       
-      // MARK: - 태그
-      if !post.hashTags.isEmpty {
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 8) {
-            ForEach(post.hashTags, id: \.self) { tag in
-              Text("#\(tag)")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(CVCColor.primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(CVCColor.primaryLight.opacity(0.1))
-                .cornerRadius(16)
-            }
-          }
-          .padding(.horizontal, 1)
-        }
+      // MARK: - 카테고리 태그
+      HStack(spacing: 8) {
+        TagView(text: post.category)
+        TagView(text: post.country)
+        
+        Spacer()
       }
+      .padding(.horizontal, 8)
     }
-    .padding(.vertical, 16)
+    .padding(.horizontal, 16)
+    .padding(.vertical, 20)
     .background(CVCColor.grayScale0)
-    .cornerRadius(12)
-    .shadow(color: CVCColor.grayScale30.opacity(0.1), radius: 4, x: 0, y: 2)
+    .onAppear {
+      print("ActivityPostCard rendered for post: \(post.title)")
+    }
   }
 }
 
@@ -280,10 +278,7 @@ struct PostImageGrid: View {
   var body: some View {
     if images.count == 1 {
       // 단일 이미지
-      CachedAsyncImage(
-        url: URL(string: images[0]),
-        contentMode: .fill
-      ) {
+      AsyncImageView(path: images[0]) {
         Rectangle()
           .fill(CVCColor.grayScale30)
           .overlay(
@@ -298,10 +293,7 @@ struct PostImageGrid: View {
       // 2개 이미지 - 좌우 분할
       HStack(spacing: 4) {
         ForEach(Array(images.enumerated()), id: \.offset) { index, imageUrl in
-          CachedAsyncImage(
-            url: URL(string: imageUrl),
-            contentMode: .fill
-          ) {
+          AsyncImageView(path: imageUrl) {
             Rectangle()
               .fill(CVCColor.grayScale30)
               .overlay(
@@ -318,10 +310,7 @@ struct PostImageGrid: View {
       // 3개 이상 - 좌측 큰 이미지, 우측 2개 작은 이미지
       HStack(spacing: 4) {
         // 좌측 큰 이미지
-        CachedAsyncImage(
-          url: URL(string: images[0]),
-          contentMode: .fill
-        ) {
+        AsyncImageView(path: images[0]) {
           Rectangle()
             .fill(CVCColor.grayScale30)
             .overlay(
@@ -335,10 +324,7 @@ struct PostImageGrid: View {
         
         // 우측 작은 이미지들
         VStack(spacing: 4) {
-          CachedAsyncImage(
-            url: URL(string: images[1]),
-            contentMode: .fill
-          ) {
+          AsyncImageView(path: images[1]) {
             Rectangle()
               .fill(CVCColor.grayScale30)
               .overlay(
@@ -352,10 +338,7 @@ struct PostImageGrid: View {
           
           if images.count >= 3 {
             ZStack {
-              CachedAsyncImage(
-                url: URL(string: images[2]),
-                contentMode: .fill
-              ) {
+              AsyncImageView(path: images[2]) {
                 Rectangle()
                   .fill(CVCColor.grayScale30)
                   .overlay(
@@ -383,6 +366,53 @@ struct PostImageGrid: View {
           }
         }
       }
+    }
+  }
+}
+
+// MARK: - AsyncImageView (ImageLoadHelper 사용)
+struct AsyncImageView<Placeholder: View>: View {
+  let path: String
+  let placeholder: Placeholder
+  
+  @State private var image: UIImage?
+  @State private var isLoading = false
+  
+  init(path: String, @ViewBuilder placeholder: () -> Placeholder) {
+    self.path = path
+    self.placeholder = placeholder()
+  }
+  
+  var body: some View {
+    Group {
+      if let image = image {
+        Image(uiImage: image)
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+      } else {
+        placeholder
+          .onAppear {
+            loadImage()
+          }
+      }
+    }
+  }
+  
+  private func loadImage() {
+    guard !path.isEmpty && !isLoading else { return }
+    
+    isLoading = true
+    let endpoint = ActivityPostEndpoint(requestType: .fetchPostsByGeolocation(
+      country: nil, category: nil, longitude: nil, latitude: nil,
+      maxDistance: nil, limit: nil, next: nil, orderBy: nil
+    ))
+    
+    ImageLoadHelper.shared.loadCachedImage(
+      path: path,
+      endpoint: endpoint
+    ) { loadedImage in
+      self.image = loadedImage
+      self.isLoading = false
     }
   }
 }
