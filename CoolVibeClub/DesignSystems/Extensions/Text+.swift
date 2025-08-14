@@ -32,6 +32,23 @@ extension Text {
       .foregroundStyle(textColor)
   }
   
+  // MARK: - 포스트
+  func postTitleStyle(_ textColor: Color = CVCColor.grayScale0) -> some View {
+    self.font(.system(size: 16, weight: .bold))
+      .foregroundStyle(CVCColor.grayScale90)
+      .multilineTextAlignment(.leading)
+      .padding(.horizontal, 8)
+  }
+
+  func postContentStyle(_ textColor: Color = CVCColor.grayScale0) -> some View {
+    self.font(.system(size: 14, weight: .regular))
+      .foregroundStyle(CVCColor.grayScale75)
+      .multilineTextAlignment(.leading)
+      .lineLimit(3)
+      .padding(.horizontal, 8)
+  }
+
+  // MARK: - 가격
   func bannerTitleStyle(_ textColor: Color = CVCColor.grayScale90) -> some View {
     self.paperlogyBlack(size: 22)
       .foregroundStyle(textColor)

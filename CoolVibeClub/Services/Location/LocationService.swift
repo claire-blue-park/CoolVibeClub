@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import SwiftUI
+import UIKit
 
 // MARK: - Location Authorization Status
 enum LocationAuthorizationStatus {
@@ -24,8 +25,12 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
   @Published var authorizationStatus: LocationAuthorizationStatus = .notDetermined
   @Published var currentLocation: CLLocation?
   @Published var isLocationEnabled: Bool = false
+  @Published var showLocationAlert: Bool = false
   
   private let locationManager = CLLocationManager()
+  
+  // 포스트 로딩을 위한 클로저
+  var onLocationAuthorized: ((CLLocation?) -> Void)?
   
   override init() {
     super.init()
@@ -43,18 +48,44 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
   
   // MARK: - Public Methods
   func requestLocationPermission() {
-    switch locationManager.authorizationStatus {
+    if authorizationStatus == .denied {
+      // 설정 앱으로 이동
+      if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(settingsUrl)
+      }
+    } else {
+      switch locationManager.authorizationStatus {
+      case .notDetermined:
+        print("📍 위치 권한 요청")
+        locationManager.requestWhenInUseAuthorization()
+      case .denied, .restricted:
+        print("⚠️ 위치 권한이 거부되거나 제한됨 - 설정 앱으로 이동 필요")
+        break
+      case .authorizedWhenInUse, .authorizedAlways:
+        print("📍 위치 권한이 이미 승인됨 - 위치 업데이트 시작")
+        startLocationUpdates()
+      @unknown default:
+        print("⚠️ 알 수 없는 위치 권한 상태")
+        break
+      }
+    }
+  }
+  
+  func handleLocationAuthorizationChange() {
+    switch authorizationStatus {
+    case .authorized:
+      print("📍 위치 권한 승인됨")
+      let coordinates = getCurrentCoordinates()
+      print("📍 현재 위치: \(coordinates.latitude), \(coordinates.longitude)")
+      
+      // 위치 권한 승인되면 포스트 로드
+      onLocationAuthorized?(currentLocation)
+      
+    case .denied:
+      showLocationAlert = true
+    case .restricted:
+      print("⚠️ 위치 권한이 제한됨")
     case .notDetermined:
-      print("📍 위치 권한 요청")
-      locationManager.requestWhenInUseAuthorization()
-    case .denied, .restricted:
-      print("⚠️ 위치 권한이 거부되거나 제한됨 - 설정 앱으로 이동 필요")
-      break
-    case .authorizedWhenInUse, .authorizedAlways:
-      print("📍 위치 권한이 이미 승인됨 - 위치 업데이트 시작")
-      startLocationUpdates()
-    @unknown default:
-      print("⚠️ 알 수 없는 위치 권한 상태")
       break
     }
   }

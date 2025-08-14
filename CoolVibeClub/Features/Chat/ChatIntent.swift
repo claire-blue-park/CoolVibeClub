@@ -20,6 +20,7 @@ final class ChatIntent: ObservableObject, Intent {
     var showingFilePicker: Bool = false
     var showingPhotosPicker: Bool = false
     var selectedPhotos: [PhotosPickerItem] = []
+    var selectedUIImages: [UIImage] = []
     var showingDocumentPicker: Bool = false
   }
 
@@ -33,6 +34,8 @@ final class ChatIntent: ObservableObject, Intent {
     case setShowingFilePicker(Bool)
     case setShowingPhotosPicker(Bool)
     case setSelectedPhotos([PhotosPickerItem])
+    case setSelectedUIImages([UIImage])
+    case removePhoto(UIImage)
     case setShowingDocumentPicker(Bool)
     case uploadFiles([URL])
   }
@@ -83,7 +86,13 @@ final class ChatIntent: ObservableObject, Intent {
 
     case .setSelectedPhotos(let items):
       self.state.selectedPhotos = items
-      Task { await handleSelectedPhotos(items) }
+      Task { await convertPhotosToUIImages(items) }
+
+    case .setSelectedUIImages(let images):
+      self.state.selectedUIImages = images
+
+    case .removePhoto(let photo):
+      self.state.selectedUIImages.removeAll { $0 === photo }
 
     case .setShowingDocumentPicker(let show):
       self.state.showingDocumentPicker = show
@@ -146,6 +155,13 @@ final class ChatIntent: ObservableObject, Intent {
   }
 
   private func sendMessage() async {
+    guard !state.input.isEmpty || !state.selectedUIImages.isEmpty else { return }
+    
+    // 선택된 이미지가 있으면 먼저 업로드
+    if !state.selectedUIImages.isEmpty {
+      await uploadSelectedImages()
+    }
+    
     guard !state.input.isEmpty else { return }
     let actualRoomId = state.currentChatRoom?.roomId ?? roomId
     let messageText = state.input
@@ -175,6 +191,42 @@ final class ChatIntent: ObservableObject, Intent {
     }
   }
 
+  private func convertPhotosToUIImages(_ photos: [PhotosPickerItem]) async {
+    if photos.count > 5 { return }
+    var uiImages: [UIImage] = []
+    
+    for photo in photos {
+      if let imageData = try? await photo.loadTransferable(type: Data.self),
+         let uiImage = UIImage(data: imageData) {
+        uiImages.append(uiImage)
+      }
+    }
+    
+    self.state.selectedUIImages = uiImages
+    self.state.selectedPhotos = [] // PhotosPicker selection 초기화
+  }
+  
+  private func uploadSelectedImages() async {
+    let images = state.selectedUIImages
+    var imageURLs: [URL] = []
+    
+    for image in images {
+      if let imageData = image.jpegData(compressionQuality: 0.8) {
+        let compressedData = imageData.count > 5 * 1024 * 1024 ? compressImage(imageData) : imageData
+        if let finalData = compressedData {
+          let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".jpg")
+          try? finalData.write(to: tempURL)
+          imageURLs.append(tempURL)
+        }
+      }
+    }
+    
+    self.state.selectedUIImages = [] // UI 이미지들 초기화
+    if !imageURLs.isEmpty { 
+      await uploadFiles(imageURLs) 
+    }
+  }
+  
   private func handleSelectedPhotos(_ photos: [PhotosPickerItem]) async {
     if photos.count > 5 { return }
     var imageURLs: [URL] = []

@@ -1,6 +1,6 @@
 import SwiftUI
 
-class TabVisibilityStore: ObservableObject {
+final class TabVisibilityStore: ObservableObject {
     @Published var isVisible: Bool = true {
         didSet {
             // 값이 변경될 때만 애니메이션 실행

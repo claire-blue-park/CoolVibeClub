@@ -79,7 +79,11 @@ struct ChatView: View {
           showingFilePicker: Binding(get: { intent.state.showingFilePicker }, set: { intent.send(.setShowingFilePicker($0)) }),
           showingPhotosPicker: Binding(get: { intent.state.showingPhotosPicker }, set: { intent.send(.setShowingPhotosPicker($0)) }),
           showingDocumentPicker: Binding(get: { intent.state.showingDocumentPicker }, set: { intent.send(.setShowingDocumentPicker($0)) }),
-          onSendMessage: { intent.send(.sendMessage) }
+          selectedPhotos: Binding(get: { intent.state.selectedUIImages }, set: { intent.send(.setSelectedUIImages($0)) }),
+          onSendMessage: { intent.send(.sendMessage) },
+          onPhotoRemove: { photo in
+            intent.send(.removePhoto(photo))
+          }
         )
       }
       .navigationBarHidden(true)
@@ -295,41 +299,8 @@ struct MessageContentView: View {
       if let files = message.files, !files.isEmpty {
         let imageFiles = files.filter { isImageFile($0) }
         if !imageFiles.isEmpty {
-          HStack(spacing: 4) {
-            //                        if message.isMe {
-            //                            Spacer()
-            //                        }
-            //
-            if imageFiles.count == 1 {
-              ChatAsyncImageView(filePath: imageFiles[0])
-                .frame(width: 160, height: 160)
-                .cornerRadius(12)
-                .clipped()
-                .overlay(
-                  RoundedRectangle(cornerRadius: 12)
-                    .stroke(CVCColor.grayScale15, lineWidth: 1)
-                )
-            } else {
-              HStack(spacing: 8) {
-                ForEach(imageFiles, id: \.self) { filePath in
-                  ChatAsyncImageView(filePath: filePath)
-                    .frame(width: 160 / CGFloat(min(imageFiles.count, 3)), height: 160)
-                    .cornerRadius(12)
-                    .clipped()
-                    .overlay(
-                      RoundedRectangle(cornerRadius: 12)
-                        .stroke(CVCColor.grayScale15, lineWidth: 1)
-                    )
-                }
-              }
-            }
-            
-            //                        if !message.isMe {
-            //                            Spacer()
-            //                        }
-          }
-          //                    .frame(maxWidth: .infinity)
-          .padding(.top, 4)
+          ChatImageGrid(imageFiles: imageFiles)
+            .padding(.top, 4)
         }
       }
       
@@ -384,108 +355,110 @@ struct MessageInputView: View {
   @Binding var showingFilePicker: Bool
   @Binding var showingPhotosPicker: Bool
   @Binding var showingDocumentPicker: Bool
+  @Binding var selectedPhotos: [UIImage]
   let onSendMessage: () -> Void
+  let onPhotoRemove: (UIImage) -> Void
   
   var body: some View {
-    HStack(spacing: 12) {
-      Button(action: {
-        showingFilePicker = true
-      }) {
-        Image(systemName: "plus.circle")
-          .font(.system(size: 20))
-          .foregroundColor(CVCColor.grayScale60)
-      }
-      .confirmationDialog("파일 첨부", isPresented: $showingFilePicker) {
-        Button("사진 선택") {
-          showingPhotosPicker = true
-        }
-        Button("문서 선택") {
-          showingDocumentPicker = true
-        }
-        Button("취소", role: .cancel) { }
-      }
-      
-      HStack(spacing: 8) {
-        TextField("메시지를 입력하세요", text: $input)
-          .font(.system(size: 13))
-          .foregroundColor(CVCColor.grayScale90)
+    VStack(spacing: 0) {
+      // 선택된 사진들 표시
+      if !selectedPhotos.isEmpty {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 8) {
+            ForEach(Array(selectedPhotos.enumerated()), id: \.offset) { index, photo in
+              ZStack(alignment: .topTrailing) {
+                Image(uiImage: photo)
+                  .resizable()
+                  .aspectRatio(contentMode: .fill)
+                  .frame(width: 80, height: 80)
+                  .clipped()
+                  .cornerRadius(8)
+                  .overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                      .stroke(lineWidth: 1)
+                      .foregroundStyle(CVCColor.grayScale30)
+                  }
+                
+                Button(action: {
+                  onPhotoRemove(photo)
+                }) {
+                  Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 16))
+                    .foregroundColor(.white)
+                    .background(CVCColor.grayScale60)
+                    .clipShape(Circle())
+                }
+                .offset(x: 4, y: -4)
+              }
+              .padding(.vertical, 4)
+            }
+          }
           .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .background(CVCColor.grayScale15)
-          .cornerRadius(24)
-          .overlay(
-            RoundedRectangle(cornerRadius: 24)
-              .stroke(CVCColor.grayScale30, lineWidth: 1)
-          )
+        }
+        .background(CVCColor.grayScale0)
+        .animation(.easeInOut(duration: 0.2), value: selectedPhotos.count)
       }
       
-      Button(action: onSendMessage) {
-        CVCImage.arrowRight.template
-          .frame(width: 20, height: 20)
-          .foregroundColor(input.isEmpty ? CVCColor.grayScale60 : CVCColor.grayScale0)
-          .padding(12)
-          .background(
-            Circle()
-              .fill(input.isEmpty ? CVCColor.grayScale30 : CVCColor.primary)
-          )
+      // 메시지 입력 영역
+      HStack(spacing: 12) {
+        Button(action: {
+          showingFilePicker = true
+        }) {
+          Image(systemName: "plus.circle")
+            .font(.system(size: 20))
+            .foregroundColor(CVCColor.grayScale60)
+        }
+        .confirmationDialog("파일 첨부", isPresented: $showingFilePicker) {
+          Button("사진 선택") {
+            showingPhotosPicker = true
+          }
+          Button("문서 선택") {
+            showingDocumentPicker = true
+          }
+          Button("취소", role: .cancel) { }
+        }
+        
+        HStack(spacing: 8) {
+          TextField("메시지를 입력하세요", text: $input)
+            .font(.system(size: 13))
+            .foregroundColor(CVCColor.grayScale90)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(CVCColor.grayScale15)
+            .cornerRadius(24)
+            .overlay(
+              RoundedRectangle(cornerRadius: 24)
+                .stroke(CVCColor.grayScale30, lineWidth: 1)
+            )
+        }
+        
+        Button(action: onSendMessage) {
+          CVCImage.arrowRight.template
+            .frame(width: 20, height: 20)
+            .foregroundColor((input.isEmpty && selectedPhotos.isEmpty) ? CVCColor.grayScale60 : CVCColor.grayScale0)
+            .padding(12)
+            .background(
+              Circle()
+                .fill((input.isEmpty && selectedPhotos.isEmpty) ? CVCColor.grayScale30 : CVCColor.primary)
+            )
+        }
+        .disabled(input.isEmpty && selectedPhotos.isEmpty)
+        .animation(.easeInOut(duration: 0.1), value: input.isEmpty && selectedPhotos.isEmpty)
       }
-      .disabled(input.isEmpty)
-      .animation(.easeInOut(duration: 0.1), value: input.isEmpty)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .background(
+        Rectangle()
+          .fill(CVCColor.grayScale0)
+          .ignoresSafeArea()
+          .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: -2)
+      )
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(
-      Rectangle()
-        .fill(CVCColor.grayScale0)
-        .ignoresSafeArea()
-        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: -2)
-    )
   }
 }
 
-struct ChatAsyncImageView: View {
-  let filePath: String
-  @State private var image: UIImage? = nil
-  @State private var isLoading: Bool = true
-  
-  var body: some View {
-    ZStack {
-      if let image = image {
-        Image(uiImage: image)
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-          .frame(width: 160, height: 160)
-          .clipped()
-      } else if isLoading {
-        ProgressView()
-          .frame(width: 160, height: 160)
-          .background(CVCColor.grayScale30)
-          .cornerRadius(12)
-      } else {
-        Image(systemName: "photo")
-          .foregroundColor(CVCColor.grayScale60)
-          .frame(width: 160, height: 160)
-          .background(CVCColor.grayScale30)
-          .cornerRadius(12)
-      }
-    }
-    .background(CVCColor.grayScale30)
-    .cornerRadius(12)
-    .onAppear {
-      loadImage()
-    }
-  }
-  
-  private func loadImage() {
-    let endpoint = ChatEndpoint(requestType: .fetchMessages(roomId: "", next: nil))
-    ImageLoadHelper.shared.loadCachedImage(path: filePath, endpoint: endpoint) { loadedImage in
-      DispatchQueue.main.async {
-        self.image = loadedImage
-        self.isLoading = false
-      }
-    }
-  }
-}
+
+
 
 struct ImagePreviewView: View {
   let images: [String]
