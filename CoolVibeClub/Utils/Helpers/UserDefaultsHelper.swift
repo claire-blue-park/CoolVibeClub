@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FirebaseMessaging
 
 final class UserDefaultsHelper {
   static let shared = UserDefaultsHelper()
@@ -18,22 +19,15 @@ final class UserDefaultsHelper {
   private let accessTokenKey = "accessToken"
   private let refreshTokenKey = "refreshToken"
   
-  // MARK: - 디바이스 토큰
+  // MARK: - 디바이스 토큰 (KeyChain 사용)
   func saveDeviceToken(_ token: String) {
-    print("📱 디바이스 토큰 저장 중: \(token.prefix(20))... (길이: \(token.count))")
-    UserDefaults.standard.set(token, forKey: deviceTokenKey)
-    UserDefaults.standard.synchronize()
-    print("✅ 디바이스 토큰 저장 완료")
+    print("📱 디바이스 토큰 UserDefaults → KeyChain 위임")
+    KeyChainHelper.shared.saveDeviceToken(token)
   }
   
   func getDeviceToken() -> String? {
-    let token = UserDefaults.standard.string(forKey: deviceTokenKey)
-    if let token = token {
-      print("📱 디바이스 토큰 조회 성공: \(token.prefix(20))... (길이: \(token.count))")
-    } else {
-      print("❌ 저장된 디바이스 토큰이 없음")
-    }
-    return token
+    print("📱 디바이스 토큰 UserDefaults → KeyChain 위임")
+    return KeyChainHelper.shared.loadDeviceToken()
   }
   
   // MARK: - 로그인 상태
@@ -112,6 +106,52 @@ final class UserDefaultsHelper {
     clearTokens()
     UserDefaults.standard.removeObject(forKey: userIDKey)
     UserDefaults.standard.synchronize()
+  }
+  
+  // MARK: - 디바이스 토큰 요청
+  func requestDeviceTokenIfNeeded() async -> String? {
+    // 이미 저장된 토큰이 있으면 반환 (KeyChain에서 확인)
+    if let existingToken = getDeviceToken() {
+      print("📱 기존 디바이스 토큰 사용: \(existingToken.prefix(20))...")
+      return existingToken
+    }
+    
+    // FCM 토큰 요청
+    print("🔄 FCM 토큰 요청 중...")
+    return await withCheckedContinuation { continuation in
+      Messaging.messaging().token { token, error in
+        if let error = error {
+          print("❌ FCM 토큰 요청 실패: \(error)")
+          
+          // FCM 토큰 실패 시 임시 토큰 생성
+          let fallbackToken = self.generateFallbackToken()
+          print("🔄 임시 토큰 생성: \(fallbackToken.prefix(20))...")
+          self.saveDeviceToken(fallbackToken)  // KeyChain에 저장
+          continuation.resume(returning: fallbackToken)
+          
+        } else if let token = token {
+          print("✅ FCM 토큰 요청 성공: \(token.prefix(20))...")
+          self.saveDeviceToken(token)  // KeyChain에 저장
+          continuation.resume(returning: token)
+        } else {
+          print("❌ FCM 토큰이 nil")
+          
+          // FCM 토큰 nil인 경우 임시 토큰 생성
+          let fallbackToken = self.generateFallbackToken()
+          print("🔄 임시 토큰 생성: \(fallbackToken.prefix(20))...")
+          self.saveDeviceToken(fallbackToken)  // KeyChain에 저장
+          continuation.resume(returning: fallbackToken)
+        }
+      }
+    }
+  }
+  
+  // MARK: - 임시 토큰 생성
+  private func generateFallbackToken() -> String {
+    // UUID 기반 임시 토큰 생성
+    let uuid = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+    let timestamp = String(Int(Date().timeIntervalSince1970))
+    return "temp_\(uuid)_\(timestamp)"
   }
 
 }

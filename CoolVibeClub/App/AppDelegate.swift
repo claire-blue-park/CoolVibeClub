@@ -33,9 +33,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
       let settings: UIUserNotificationSettings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
       application.registerUserNotificationSettings(settings)
     }
-//    application.registerForRemoteNotifications()
     
-
+    // APNS 등록 (중요: FCM 토큰 생성을 위해 필요)
+    application.registerForRemoteNotifications()
     
     // 푸시 알림 권한 요청
     UNUserNotificationCenter.current().delegate = self
@@ -104,9 +104,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     print("📱 APNS Device Token: \(tokenString)")
     print("📱 Device Token 길이: \(tokenString.count) characters")
     
-    // UserDefaults에 저장
-    UserDefaultsHelper.shared.saveDeviceToken(tokenString)
-    print("✅ 디바이스 토큰 저장 완료")
+    // KeyChain에 저장
+    KeyChainHelper.shared.saveDeviceToken(tokenString)
+    print("✅ 디바이스 토큰 KeyChain 저장 완료")
     
     // 로그인된 사용자인 경우 서버에 토큰 업데이트
     if UserDefaultsHelper.shared.isLoggedIn() {
