@@ -11,12 +11,10 @@ import CoreLocation
 
 struct EditView: View {
   @Environment(\.dismiss) private var dismiss
-  @StateObject private var intent: EditIntent
+  @StateObject private var store = EditStore()
   @StateObject private var locationService = LocationService.shared
   
-  init() {
-    _intent = StateObject(wrappedValue: EditIntent())
-  }
+  init() {}
   
   var body: some View {
     NavigationView {
@@ -41,10 +39,10 @@ struct EditView: View {
             Spacer()
             
             Button("게시") {
-              intent.send(.submitPost)
+              store.send(.submitPost)
             }
-            .foregroundColor(intent.state.canSubmit ? CVCColor.primary : CVCColor.grayScale45)
-            .disabled(!intent.state.canSubmit)
+            .foregroundColor(store.state.canSubmit ? CVCColor.primary : CVCColor.grayScale45)
+            .disabled(!store.state.canSubmit)
           }
           .padding(.horizontal, 16)
           .padding(.vertical, 20)
@@ -58,28 +56,34 @@ struct EditView: View {
               // MARK: - 위치 정보
               LocationInfoSection(
                 currentLocation: locationService.currentLocation,
-                selectedLocation: intent.state.selectedLocation,
+                selectedLocation: store.state.selectedLocation,
                 onLocationTap: {
-                  intent.send(.toggleLocationSelection)
+                  store.send(.toggleLocationSelection)
                 }
               )
               
               // MARK: - 텍스트 입력
               TextInputSection(
-                title: $intent.state.title,
-                content: $intent.state.content,
+                title: Binding(
+                  get: { store.state.title },
+                  set: { store.send(.setTitle($0)) }
+                ),
+                content: Binding(
+                  get: { store.state.content },
+                  set: { store.send(.setContent($0)) }
+                ),
                 titlePlaceholder: "제목을 입력하세요",
                 contentPlaceholder: "내용을 입력하세요..."
               )
               
               // MARK: - 사진 첨부
               PhotoAttachmentSection(
-                selectedPhotos: intent.state.selectedPhotos,
+                selectedPhotos: store.state.selectedPhotos,
                 onPhotoAdd: {
-                  intent.send(.showPhotoPicker(true))
+                  store.send(.showPhotoPicker(true))
                 },
                 onPhotoRemove: { photo in
-                  intent.send(.removePhoto(photo))
+                  store.send(.removePhoto(photo))
                 }
               )
               
@@ -100,26 +104,35 @@ struct EditView: View {
     }
     .navigationBarHidden(true)
     .photosPicker(
-      isPresented: $intent.state.showingPhotoPicker,
-      selection: $intent.state.photoPickerItems,
+      isPresented: Binding(
+        get: { store.state.showingPhotoPicker },
+        set: { store.send(.showPhotoPicker($0)) }
+      ),
+      selection: Binding(
+        get: { store.state.photoPickerItems },
+        set: { store.send(.setPhotoPickerItems($0)) }
+      ),
       maxSelectionCount: 5,
       matching: .images
     )
-    .onChange(of: intent.state.photoPickerItems) { newItems in
-      intent.send(.handlePhotoSelection(newItems))
+    .onChange(of: store.state.photoPickerItems) { newItems in
+      store.send(.handlePhotoSelection(newItems))
     }
     .onAppear {
-      intent.send(.loadInitialData)
+      store.send(.loadInitialData)
       locationService.requestLocationPermission()
     }
-    .alert("게시글 작성", isPresented: $intent.state.showingAlert) {
+    .alert("게시글 작성", isPresented: Binding(
+      get: { store.state.showingAlert },
+      set: { store.send(.setShowingAlert($0)) }
+    )) {
       Button("확인") {
-        if intent.state.isPostSubmitted {
+        if store.state.isPostSubmitted {
           dismiss()
         }
       }
     } message: {
-      Text(intent.state.alertMessage)
+      Text(store.state.alertMessage)
     }
   }
 }

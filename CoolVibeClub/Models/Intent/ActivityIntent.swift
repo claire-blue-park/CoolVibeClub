@@ -3,7 +3,7 @@ import Foundation
 // MARK: - ActivityIntent
 enum ActivityIntent {
     // 필터링 Intent
-    case selectCountry(CountryCategories)
+    case selectCountry(Country)
     case selectCategory(String)
     
     // 데이터 로딩 Intent  

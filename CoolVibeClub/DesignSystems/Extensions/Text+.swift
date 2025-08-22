@@ -41,7 +41,7 @@ extension Text {
   }
 
   func postContentStyle(_ textColor: Color = CVCColor.grayScale0) -> some View {
-    self.font(.system(size: 14, weight: .regular))
+    self.font(.system(size: 12, weight: .regular))
       .foregroundStyle(CVCColor.grayScale75)
       .multilineTextAlignment(.leading)
       .lineLimit(3)

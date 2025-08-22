@@ -14,17 +14,25 @@ struct ActivityPostCell: View {
     VStack(alignment: .leading, spacing: 12) {
       // MARK: - 유저 정보
       HStack(spacing: 12) {
-        AsyncImageView(
-          path: post.creator.profileImage ?? ""
+        CachedAsyncImage(
+          urlString: post.creator.profileImage ?? "",
+          endpoint: ActivityPostEndpoint(requestType: .fetchPostsByGeolocation(
+            country: nil, category: nil, longitude: nil, latitude: nil,
+            maxDistance: nil, limit: nil, next: nil, orderBy: nil
+          )),
+          contentMode: .fill
         ) {
           Image(systemName: "person.circle.fill")
             .font(.system(size: 24))
             .foregroundStyle(CVCColor.grayScale60)
+            .frame(width: 40, height: 40)
+            .background(CVCColor.grayScale15)
+            .clipShape(Circle())
         }
         .frame(width: 40, height: 40)
-        .background(CVCColor.grayScale15)
         .clipShape(Circle())
         
+        // 닉네임, 작성 시간
         VStack(alignment: .leading, spacing: 2) {
           Text(post.creator.nick)
             .font(.system(size: 13, weight: .semibold))
@@ -49,11 +57,11 @@ struct ActivityPostCell: View {
         } deleteAction: {
           print("Delete post: \(post.title)")
         }
-
       }
       
       // MARK: - 이미지 그리드
       PostImageGrid(images: post.files)
+        .frame(maxWidth: .infinity)
       
       // MARK: - 제목
       Text(post.title)
@@ -73,8 +81,8 @@ struct ActivityPostCell: View {
       .padding(.horizontal, 8)
     }
     .padding(.horizontal, 16)
-    .padding(.vertical, 20)
+    .padding(.top, 12)
+    .padding(.bottom, 20)
     .background(CVCColor.grayScale0)
   }
 }
-
