@@ -10,30 +10,51 @@ import SwiftUI
 import Alamofire
 import Kingfisher
 
+// MARK: - MediaExtension
+enum MediaExtension: String, CaseIterable {
+  // Video Extensions
+  case mp4, mov, avi, mkv, m4v, webm, m3u8
+  
+  // Image Extensions  
+  case jpg, jpeg, png, gif, bmp, webp, svg
+  
+  var mediaType: MediaType {
+    switch self {
+    case .mp4, .mov, .avi, .mkv, .m4v, .webm, .m3u8:
+      return .video
+    case .jpg, .jpeg, .png, .gif, .bmp, .webp, .svg:
+      return .image
+    }
+  }
+  
+  static var videoExtensions: [MediaExtension] {
+    return allCases.filter { $0.mediaType == .video }
+  }
+  
+  static var imageExtensions: [MediaExtension] {
+    return allCases.filter { $0.mediaType == .image }
+  }
+}
+
 // MARK: - MediaType
 enum MediaType {
   case image
   case video
   
   static func from(url: String) -> MediaType {
-    let videoExtensions = ["mp4", "mov", "avi", "mkv", "m4v", "webm", "m3u8"]
-    let imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"]
-    
     if let urlObj = URL(string: url), !urlObj.pathExtension.isEmpty {
       let pathExtension = urlObj.pathExtension.lowercased()
-      if videoExtensions.contains(pathExtension) {
-        return .video
-      } else if imageExtensions.contains(pathExtension) {
-        return .image
+      if let mediaExtension = MediaExtension(rawValue: pathExtension) {
+        return mediaExtension.mediaType
       }
     }
     
     // Fallback for URLs without clear extension
     let lowercasedURL = url.lowercased()
-    if videoExtensions.contains(where: { lowercasedURL.hasSuffix(".\($0)") }) {
-      return .video
-    } else if imageExtensions.contains(where: { lowercasedURL.hasSuffix(".\($0)") }) {
-      return .image
+    for mediaExt in MediaExtension.allCases {
+      if lowercasedURL.hasSuffix(".\(mediaExt.rawValue)") {
+        return mediaExt.mediaType
+      }
     }
     
     // Default to image if extension is unknown

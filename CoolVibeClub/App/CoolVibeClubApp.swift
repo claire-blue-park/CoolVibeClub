@@ -15,9 +15,7 @@ import iamport_ios
 struct CoolVibeClubApp: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   @StateObject private var tabVisibilityStore = TabVisibilityStore()
-
-  @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
-  @State private var isCheckingToken: Bool = false
+  @StateObject private var authSession = AuthSession.shared
 
   init() {
     print("📱 앱 시작: CoolVibeClubApp 초기화")
@@ -28,32 +26,26 @@ struct CoolVibeClubApp: App {
     // @AppStorage가 자동으로 UserDefaults와 동기화되므로 별도 설정 불필요
   }
 
-  // 자동 로그인 확인
-  private func checkAutoLogin() {
-    print("자동 로그인 확인: 토큰 검증 시작")
-    isCheckingToken = true
-    // 토큰 검증 로직을 직접 구현하거나, 필요시 네트워크 요청 후 isLoggedIn 갱신
-    // 예시: isLoggedIn = true/false
-    // 완료 후 isCheckingToken = false
-    isCheckingToken = false
-  }
-
   var body: some Scene {
     WindowGroup {
       Group {
-        if isCheckingToken {
+        if authSession.isCheckingAuth {
           LoadingView()
-        } else if isLoggedIn {
+        } else if authSession.isLoggedIn {
           CVCTabView()
             .environmentObject(tabVisibilityStore)
         } else {
-          LoginView(onLoginSuccess: {
-            isLoggedIn = true
-          })
+          LoginView()
+        }
+      }
+      .onAppear {
+        // 앱 시작 시 자동 로그인 확인
+        Task {
+          await authSession.checkAutoLogin()
         }
       }
       .onReceive(NotificationCenter.default.publisher(for: .userDidLogout)) { _ in
-        isLoggedIn = false
+        // AuthSession에서 자동으로 처리됨
       }
       .onOpenURL { url in
         print("📱 URL Scheme 수신: \(url)")

@@ -16,7 +16,7 @@ struct DeviceTokenService {
     func updateDeviceToken(_ deviceToken: String) async throws {
         print("🔄 디바이스 토큰 업데이트 시작: \(deviceToken.prefix(20))...")
         
-        let endpoint = LoginEndpoint(requestType: .updateDeviceToken(deviceToken: deviceToken))
+        let endpoint = UserEndpoint(requestType: .updateDeviceToken(deviceToken: deviceToken))
         
         let _: EmptyResponse = try await NetworkManager.shared.fetch(
             from: endpoint,

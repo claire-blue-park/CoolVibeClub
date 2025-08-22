@@ -9,7 +9,7 @@
 import Foundation
 import SocketIO
 
-class SocketManager: ObservableObject {
+final class SocketManager: ObservableObject {
   static let shared = SocketManager()
   
   private var manager: SocketIO.SocketManager?

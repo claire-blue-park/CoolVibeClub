@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		83257C072E582A2F00677428 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 83257C062E582A2F00677428 /* README.md */; };
 		8348C35C2E38536500BBD74D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8348C35B2E38536500BBD74D /* Lottie */; };
 		8348C4732E3B43A200BBD74D /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8348C4722E3B43A200BBD74D /* RealmSwift */; };
 		8348C58C2E3B727A00BBD74D /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8348C4722E3B43A200BBD74D /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -35,6 +36,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		83257C062E582A2F00677428 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		83679B6A2E1E61FE00DCF63F /* CoolVibeClub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoolVibeClub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -83,6 +85,7 @@
 		83679B612E1E61FE00DCF63F = {
 			isa = PBXGroup;
 			children = (
+				83257C062E582A2F00677428 /* README.md */,
 				83679B6C2E1E61FE00DCF63F /* CoolVibeClub */,
 				83679B6B2E1E61FE00DCF63F /* Products */,
 			);
@@ -180,6 +183,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83257C072E582A2F00677428 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,7 +340,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				KAKAO_NATIVE_APP_KEY = 9805de5df633954741b15a219bc73b6e;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -372,7 +376,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				KAKAO_NATIVE_APP_KEY = 9805de5df633954741b15a219bc73b6e;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

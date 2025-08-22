@@ -18,7 +18,7 @@ extension EmailSignupClient {
         signupUser: { userData in
             print("📧 EmailSignupClient - 회원가입 요청: \(userData.email)")
             
-            let endpoint = LoginEndpoint(requestType: .join(userData: userData))
+            let endpoint = UserEndpoint(requestType: .join(userData: userData))
             
             let response: JoinResponse = try await NetworkManager.shared.fetch(
                 from: endpoint,
@@ -33,7 +33,7 @@ extension EmailSignupClient {
         validateEmail: { email in
             print("✅ EmailSignupClient - 이메일 검증 요청: \(email)")
             
-            let endpoint = LoginEndpoint(requestType: .emailValidation(email: email))
+            let endpoint = UserEndpoint(requestType: .emailValidation(email: email))
             
             let _: EmptyResponse = try await NetworkManager.shared.fetch(
                 from: endpoint,

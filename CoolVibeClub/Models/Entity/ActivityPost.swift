@@ -11,39 +11,99 @@ import Foundation
 // MARK: - ActivityPost Models
 struct ActivityPost: Codable, Identifiable, Hashable {
   let id: String
+  let country: String
+  let category: String
   let title: String
   let content: String
+  let activity: PostActivity
+  let geolocation: PostGeolocation
   let creator: PostCreator
   let files: [String]
-  let likes: [String]
-  let comments: [PostComment]
-  let hashTags: [String]
+  let isLike: Bool
+  let likeCount: Int
   let createdAt: String
   let updatedAt: String
   
   enum CodingKeys: String, CodingKey {
     case id = "post_id"
+    case country
+    case category
     case title
     case content
+    case activity
+    case geolocation
     case creator
     case files
-    case likes
-    case comments
-    case hashTags
+    case isLike = "is_like"
+    case likeCount = "like_count"
     case createdAt
     case updatedAt
   }
+}
+
+struct PostActivity: Codable, Hashable {
+  let id: String
+  let title: String
+  let country: String
+  let category: String
+  let thumbnails: [String]
+  let geolocation: ActivityGeolocation
+  let price: ActivityPrice
+  let tags: [String]
+  let pointReward: Int
+  let isAdvertisement: Bool
+  let isKeep: Bool
+  let keepCount: Int
+  
+  enum CodingKeys: String, CodingKey {
+    case id
+    case title
+    case country
+    case category
+    case thumbnails
+    case geolocation
+    case price
+    case tags
+    case pointReward = "point_reward"
+    case isAdvertisement = "is_advertisement"
+    case isKeep = "is_keep"
+    case keepCount = "keep_count"
+  }
+}
+
+struct ActivityGeolocation: Codable, Hashable {
+  let longitude: Double
+  let latitude: Double
+}
+
+struct PostGeolocation: Codable, Hashable {
+  let longitude: Double
+  let latitude: Double
+}
+
+struct ActivityPrice: Codable, Hashable {
+  let original: Int
+  let final: Int
 }
 
 struct PostCreator: Codable, Hashable {
   let userId: String
   let nick: String
   let profileImage: String?
+  let introduction: String?
+  
+  init(userId: String, nick: String, profileImage: String? = nil, introduction: String? = nil) {
+    self.userId = userId
+    self.nick = nick
+    self.profileImage = profileImage
+    self.introduction = introduction
+  }
   
   enum CodingKeys: String, CodingKey {
     case userId = "user_id"
     case nick
     case profileImage
+    case introduction
   }
 }
 
@@ -74,40 +134,14 @@ struct ActivityPostsResponse: Codable {
 // MARK: - Extension for UI
 extension ActivityPost {
   var isLiked: Bool {
-    // 현재 사용자 ID와 비교해서 좋아요 여부 확인
-    // TODO: 실제 현재 사용자 ID와 비교
-    return false
-  }
-  
-  var likeCount: Int {
-    return likes.count
-  }
-  
-  var commentCount: Int {
-    return comments.count
+    return isLike
   }
   
   var formattedCreatedAt: String {
-    // ISO 8601 날짜를 "n시간 전", "n일 전" 형식으로 변환
-    let formatter = ISO8601DateFormatter()
-    guard let date = formatter.date(from: createdAt) else {
-      return createdAt
-    }
-    
-    let now = Date()
-    let timeInterval = now.timeIntervalSince(date)
-    
-    if timeInterval < 60 {
-      return "방금 전"
-    } else if timeInterval < 3600 {
-      let minutes = Int(timeInterval / 60)
-      return "\(minutes)분 전"
-    } else if timeInterval < 86400 {
-      let hours = Int(timeInterval / 3600)
-      return "\(hours)시간 전"
-    } else {
-      let days = Int(timeInterval / 86400)
-      return "\(days)일 전"
-    }
+    return DateHelper.formatToKorean(from: createdAt)
+  }
+  
+  var relativeCreatedAt: String {
+    return DateHelper.formatRelative(from: createdAt)
   }
 }

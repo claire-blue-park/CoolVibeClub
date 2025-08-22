@@ -14,5 +14,6 @@ enum NavBarButton {
     case alert(action: () -> Void)
     case close(action: () -> Void)
     case back(action: () -> Void)
+    case backArrow(action: () -> Void)  // 간단한 화살표 뒤로가기
     case like(isLiked: Bool, action: () -> Void)
 }
